@@ -23,12 +23,5 @@ USER 999
 # Instal dependensi composer (tanpa dev)
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# Buat file dummy sqlite agar proses optimize tidak gagal karena mencari database default
-RUN touch database/database.sqlite
-
-# Optimasi Laravel
-RUN php artisan optimize:clear \
-    && php artisan config:cache \
-    && php artisan event:cache \
-    && php artisan route:cache \
-    && php artisan view:cache
+# Optimasi (config, route, view) akan dijalankan otomatis oleh image serversideup 
+# saat container pertama kali booting (entrypoint).
