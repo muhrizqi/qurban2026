@@ -136,9 +136,9 @@
 
         @foreach($jenisList as $jenis)
             @php
-                $items = \App\Models\SohibulSapi::where('jenis', $jenis)
-                            ->orderByRaw("CAST(TRIM(no_sohibul, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz') AS UNSIGNED) ASC")
-                            ->get();
+                $items = \App\Models\SohibulSapi::where('jenis', $jenis)->get()->sortBy(function($item) {
+                    return (int) preg_replace('/[^0-9]/', '', $item->no_sohibul);
+                });
             @endphp
 
             @if($items->count() > 0)
