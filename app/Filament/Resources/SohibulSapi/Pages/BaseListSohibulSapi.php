@@ -153,7 +153,10 @@ abstract class BaseListSohibulSapi extends ListRecords
                             $out .= '<br><small>📱 ' . e($record->nohp) . '</small>';
                         }
                         if ($record->kwitansi) {
-                            $url  = asset('storage/' . $record->kwitansi);
+                            $url = str_starts_with($record->kwitansi, 'http') 
+                                ? $record->kwitansi 
+                                : asset('storage/' . $record->kwitansi);
+                                
                             $out .= ' &nbsp;<a href="' . $url . '" target="_blank" '
                                   . 'style="color:#2563eb;font-size:0.75rem">📄 Kwitansi</a>';
                         }
