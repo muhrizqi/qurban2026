@@ -13,6 +13,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Checkbox;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Closure;
@@ -168,34 +169,30 @@ class SohibulSapiResource extends Resource
                 ->options(SohibulSapi::POSISI_OPTIONS)
                 ->required(),
 
-            // ── Kwitansi (Hybrid: URL or Upload) ───────────────
-            TextInput::make('kwitansi')
-                ->label('Link / Path Kwitansi')
-                ->placeholder('https://... atau upload file di bawah')
-                ->helperText('Isi dengan URL eksternal (HTTP) atau biarkan terisi otomatis saat upload file.')
-                ->live(),
+            // ── Kwitansi (Toggle: Upload vs URL) ──────────────
+            Checkbox::make('is_manual_url')
+                ->label('Input Link URL Luar (Bukan Upload)')
+                ->live()
+                ->afterStateHydrated(function ($state, Set $set, $record) {
+                    if ($record && str_starts_with($record->kwitansi ?? '', 'http')) {
+                        $set('is_manual_url', true);
+                    }
+                }),
 
-            FileUpload::make('kwitansi_upload')
+            FileUpload::make('kwitansi')
                 ->label('Upload Foto Kwitansi')
                 ->image()
                 ->disk('public')
                 ->directory('kwitansi')
                 ->imagePreviewHeight('200')
                 ->nullable()
-                ->live()
-                // Saat upload selesai, masukkan path-nya ke TextInput kwitansi
-                ->afterStateUpdated(function ($state, Set $set) {
-                    if ($state) {
-                        $set('kwitansi', $state);
-                    }
-                })
-                // Saat form diload, jika datanya bukan URL, tampilkan di preview upload
-                ->afterStateHydrated(function ($state, Set $set, $record) {
-                    if ($record && $record->kwitansi && !str_starts_with($record->kwitansi, 'http')) {
-                        $set('kwitansi_upload', $record->kwitansi);
-                    }
-                })
-                ->dehydrated(false), // Data asli disimpan via TextInput kwitansi
+                ->visible(fn (Get $get) => ! $get('is_manual_url')),
+
+            TextInput::make('kwitansi')
+                ->label('Link URL Kwitansi')
+                ->placeholder('https://...')
+                ->url()
+                ->visible(fn (Get $get) => (bool) $get('is_manual_url')),
 
             // ── URL Maps ───────────────────────────────────────
             TextInput::make('urlmap')
