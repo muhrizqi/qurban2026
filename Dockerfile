@@ -25,3 +25,8 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction
 
 # Optimasi (config, route, view) akan dijalankan otomatis oleh image serversideup 
 # saat container pertama kali booting (entrypoint).
+
+# PENTING: ServerSideUp menggunakan S6-Overlay yang membutuhkan akses ROOT 
+# saat pertama kali container dijalankan (untuk setting konfigurasi nginx dll).
+# Setelah setup selesai, sistem otomatis menurunkan aksesnya ke user aman (999).
+USER root
