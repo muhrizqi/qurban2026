@@ -169,13 +169,25 @@ class SohibulSapiResource extends Resource
                 ->required(),
 
             // ── Kwitansi ───────────────────────────────────────
+            Placeholder::make('kwitansi_link')
+                ->label('Link Kwitansi Eksternal')
+                ->content(fn ($record) => $record && str_starts_with($record->kwitansi ?? '', 'http') 
+                    ? new HtmlString('<a href="'.$record->kwitansi.'" target="_blank" style="color:#2563eb;text-decoration:underline;">Buka Kwitansi (Situs Luar)</a>') 
+                    : '-')
+                ->visible(fn ($record) => $record && str_starts_with($record->kwitansi ?? '', 'http')),
+
             FileUpload::make('kwitansi')
                 ->label('Foto Kwitansi')
                 ->image()
                 ->disk('public')
                 ->directory('kwitansi')
                 ->imagePreviewHeight('200')
-                ->nullable(),
+                ->nullable()
+                ->helperText(fn ($record) => $record && str_starts_with($record->kwitansi ?? '', 'http') 
+                    ? 'Data saat ini adalah link eksternal. Upload file baru jika ingin menggantinya dengan foto lokal.' 
+                    : null)
+                // Cegah hapus data otomatis jika state-nya adalah URL eksternal (yang gagal terload di FileUpload)
+                ->dehydrated(fn ($state) => !is_string($state) || !str_starts_with($state, 'http')),
 
             // ── URL Maps ───────────────────────────────────────
             TextInput::make('urlmap')
