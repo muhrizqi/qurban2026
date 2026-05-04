@@ -46,6 +46,7 @@ mkdir -p /var/www/html/storage/framework/cache/data\n\
 mkdir -p /var/www/html/storage/framework/sessions\n\
 mkdir -p /var/www/html/storage/logs\n\
 mkdir -p /var/www/html/storage/app/public\n\
+php artisan storage:link --force\n\
 chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache\n\
 ' > /etc/entrypoint.d/01-create-storage-dirs.sh && \
     chmod +x /etc/entrypoint.d/01-create-storage-dirs.sh
