@@ -5,12 +5,13 @@ namespace App\Filament\Resources\SohibulSapi\Pages;
 use App\Filament\Resources\SohibulSapi\SohibulSapiResource;
 use App\Models\SohibulSapi;
 use Filament\Actions\Action;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\Action as TableAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
@@ -131,6 +132,21 @@ abstract class BaseListSohibulSapi extends ListRecords
             ->filters([])
             ->actions([
                 ViewAction::make()->label('')->tooltip('Lihat'),
+                
+                // Tombol Cetak Kuitansi PDF (Khusus adminsohibul/admin, Rek Qurban, Belum ada kwitansi)
+                TableAction::make('cetak_kuitansi')
+                    ->label('')
+                    ->tooltip('Cetak Kuitansi PDF')
+                    ->icon('heroicon-o-document-arrow-down')
+                    ->color('success')
+                    ->url(fn (SohibulSapi $record) => route('sohibul.kuitansi.pdf', $record))
+                    ->openUrlInNewTab()
+                    ->visible(fn (SohibulSapi $record) => 
+                        auth()->user()?->hasAnyRole(['admin', 'adminsohibul']) 
+                        && $record->posisidana === 'Rek Qurban' 
+                        && empty($record->kwitansi)
+                    ),
+
                 EditAction::make()
                     ->label('')
                     ->tooltip('Edit')
