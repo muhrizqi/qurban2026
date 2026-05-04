@@ -7,98 +7,137 @@
     $markersJson = json_encode($markers, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT);
 @endphp
 
-{{-- ── Stats Bar (Filament Native UI) ─────────────────────────────── --}}
-<div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-    <div class="fi-wi-stats-overview-stat relative rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-950/5 dark:bg-gray-900 dark:ring-white/10">
-        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Sohibul</p>
-        <p class="text-3xl font-semibold text-gray-950 dark:text-white mt-2">{{ $stats['total'] }}</p>
+{{-- ── Stats Bar ──────────────────────────────────────────────────── --}}
+<div class="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-4">
+    <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4 flex flex-col items-center">
+        <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Total Sohibul</p>
+        <p class="text-2xl font-bold text-gray-800 dark:text-white">{{ $stats['total'] }}</p>
     </div>
-    
-    <div class="fi-wi-stats-overview-stat relative rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-950/5 dark:bg-gray-900 dark:ring-white/10">
-        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Ada Koordinat</p>
-        <p class="text-3xl font-semibold text-primary-600 dark:text-primary-400 mt-2">{{ $stats['mapped'] }}</p>
+    <div class="bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800 p-4 flex flex-col items-center">
+        <p class="text-xs text-blue-600 dark:text-blue-400 mb-1">Ada Koordinat</p>
+        <p class="text-2xl font-bold text-blue-700 dark:text-blue-300">{{ $stats['mapped'] }}</p>
     </div>
-
-    <div class="fi-wi-stats-overview-stat relative rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-950/5 dark:bg-gray-900 dark:ring-white/10">
-        <div class="flex items-center gap-2">
-            <span class="inline-block w-3 h-3 rounded-full bg-danger-500"></span>
-            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Belum Diproses</p>
-        </div>
-        <p class="text-3xl font-semibold text-gray-950 dark:text-white mt-2">{{ $stats['belum'] }}</p>
+    <div class="bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 flex flex-col items-center">
+        <span class="text-lg mb-1">⬜</span>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Belum Diproses</p>
+        <p class="text-2xl font-bold text-gray-700 dark:text-gray-200">{{ $stats['belum'] }}</p>
     </div>
-
-    <div class="fi-wi-stats-overview-stat relative rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-950/5 dark:bg-gray-900 dark:ring-white/10">
-        <div class="flex items-center gap-2">
-            <span class="inline-block w-3 h-3 rounded-full bg-warning-500"></span>
-            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Sedang Diproses</p>
-        </div>
-        <p class="text-3xl font-semibold text-gray-950 dark:text-white mt-2">{{ $stats['proses'] }}</p>
+    <div class="bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-200 dark:border-amber-800 p-4 flex flex-col items-center">
+        <span class="text-lg mb-1">🟡</span>
+        <p class="text-xs text-amber-600 dark:text-amber-400 mb-1">Sedang Diproses</p>
+        <p class="text-2xl font-bold text-amber-700 dark:text-amber-300">{{ $stats['proses'] }}</p>
     </div>
-
-    <div class="fi-wi-stats-overview-stat relative rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-950/5 dark:bg-gray-900 dark:ring-white/10">
-        <div class="flex items-center gap-2">
-            <span class="inline-block w-3 h-3 rounded-full bg-success-500"></span>
-            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Selesai</p>
-        </div>
-        <p class="text-3xl font-semibold text-gray-950 dark:text-white mt-2">{{ $stats['selesai'] }}</p>
+    <div class="bg-green-50 dark:bg-green-900/20 rounded-xl border border-green-200 dark:border-green-800 p-4 flex flex-col items-center">
+        <span class="text-lg mb-1">🟢</span>
+        <p class="text-xs text-green-600 dark:text-green-400 mb-1">Selesai</p>
+        <p class="text-2xl font-bold text-green-700 dark:text-green-300">{{ $stats['selesai'] }}</p>
     </div>
 </div>
 
 {{-- ── Legend & Filter Controls ────────────────────────────────────── --}}
-<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 bg-white p-4 rounded-xl shadow-sm ring-1 ring-gray-950/5 dark:bg-gray-900 dark:ring-white/10">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
     {{-- Legend --}}
     <div class="flex flex-wrap items-center gap-4 text-sm">
-        <span class="font-medium text-gray-700 dark:text-gray-200">Filter Peta:</span>
+        <span class="font-semibold text-gray-600 dark:text-gray-300">Keterangan:</span>
+        <span class="flex items-center gap-1.5">
+            <span class="inline-block w-4 h-4 rounded-full border-2 border-white shadow" style="background:#ef4444"></span>
+            <span class="text-gray-600 dark:text-gray-300">Belum Diproses</span>
+        </span>
+        <span class="flex items-center gap-1.5">
+            <span class="inline-block w-4 h-4 rounded-full border-2 border-white shadow" style="background:#f59e0b"></span>
+            <span class="text-gray-600 dark:text-gray-300">Sedang Diproses</span>
+        </span>
+        <span class="flex items-center gap-1.5">
+            <span class="inline-block w-4 h-4 rounded-full border-2 border-white shadow" style="background:#22c55e"></span>
+            <span class="text-gray-600 dark:text-gray-300">Selesai</span>
+        </span>
     </div>
 
-    {{-- Filter Buttons (Using Filament Button styles) --}}
+    {{-- Filter Buttons --}}
     <div class="flex items-center gap-2" id="filter-controls">
-        <button onclick="filterMarkers('all')" id="btn-all" class="filter-btn active-filter-btn px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border border-transparent">
+        <label class="text-xs font-medium text-gray-500 dark:text-gray-400">Filter:</label>
+        <button onclick="filterMarkers('all')" id="btn-all"
+            class="filter-btn active-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all">
             Semua
         </button>
-        <button onclick="filterMarkers(0)" id="btn-0" class="filter-btn px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border border-transparent">
+        <button onclick="filterMarkers(0)" id="btn-0"
+            class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all">
             Belum
         </button>
-        <button onclick="filterMarkers(1)" id="btn-1" class="filter-btn px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border border-transparent">
+        <button onclick="filterMarkers(1)" id="btn-1"
+            class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all">
             Proses
         </button>
-        <button onclick="filterMarkers(2)" id="btn-2" class="filter-btn px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border border-transparent">
+        <button onclick="filterMarkers(2)" id="btn-2"
+            class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all">
             Selesai
         </button>
     </div>
 </div>
 
 {{-- ── Map Container ───────────────────────────────────────────────── --}}
-<div class="relative rounded-xl overflow-hidden bg-white shadow-sm ring-1 ring-gray-950/5 dark:bg-gray-900 dark:ring-white/10" style="height:600px;">
+<div class="relative rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-lg" style="height:600px;">
 
     {{-- Marker Count Badge --}}
     <div id="marker-count-badge"
-         class="absolute bottom-6 left-6 z-[1000] bg-white dark:bg-gray-900 px-4 py-2 rounded-lg shadow-sm ring-1 ring-gray-950/5 dark:ring-white/10 text-sm font-medium text-gray-700 dark:text-gray-200">
-        Memuat peta...
+         style="position:absolute;top:12px;left:12px;z-index:1000;
+                background:rgba(255,255,255,0.93);border:1px solid #e5e7eb;
+                border-radius:10px;padding:6px 12px;font-size:12px;
+                font-weight:600;color:#374151;box-shadow:0 1px 6px rgba(0,0,0,0.12);">
+        📍 Memuat peta...
     </div>
 
     @if (empty($apiKey))
         {{-- ── Tanpa API Key: fallback list ── --}}
-        <div class="flex flex-col items-center justify-center h-full bg-gray-50 dark:bg-gray-900 gap-4 p-6">
-            <x-heroicon-o-map class="w-12 h-12 text-gray-400"/>
+        <div class="flex flex-col items-center justify-center h-full bg-gray-100 dark:bg-gray-800 gap-4 p-6">
+            <x-heroicon-o-map class="w-16 h-16 text-gray-400"/>
             <div class="text-center">
-                <p class="font-medium text-gray-950 dark:text-white">Geoapify API Key belum dikonfigurasi</p>
+                <p class="font-semibold text-gray-600 dark:text-gray-300">Geoapify API Key belum dikonfigurasi</p>
                 <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                    Tambahkan di file <code class="bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-xs border border-gray-200 dark:border-gray-700">.env</code>:
+                    Daftar gratis di
+                    <a href="https://www.geoapify.com/" target="_blank" class="text-blue-500 underline font-semibold">geoapify.com</a>
+                    lalu tambahkan di file <code class="bg-gray-200 dark:bg-gray-700 px-1.5 py-0.5 rounded text-xs">.env</code>:
                 </p>
-                <code class="inline-block mt-3 bg-gray-950 text-primary-400 text-xs font-mono px-4 py-2 rounded-lg">
+                <code class="inline-block mt-2 bg-gray-800 text-green-400 text-xs px-4 py-2 rounded-lg">
                     GEOAPIFY_API_KEY=your_api_key_here
                 </code>
+                <p class="text-xs text-gray-400 mt-2">Free tier: 3.000 tile requests/hari. Tidak perlu kartu kredit.</p>
             </div>
+
+            @if (count($markers) > 0)
+            <div class="mt-2 w-full max-w-2xl overflow-y-auto max-h-64">
+                <p class="text-xs text-gray-400 mb-2 text-center">{{ count($markers) }} sohibul dengan koordinat:</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    @foreach ($markers as $m)
+                    <a href="{{ $m['urlmap'] }}" target="_blank"
+                       class="flex items-center gap-2 bg-white dark:bg-gray-900 rounded-lg px-3 py-2 text-sm
+                              border border-gray-200 dark:border-gray-700 hover:border-blue-400 transition-colors">
+                        <span class="text-base flex-shrink-0">
+                            @if ($m['status'] === 0) 🔴
+                            @elseif ($m['status'] === 1) 🟡
+                            @else 🟢
+                            @endif
+                        </span>
+                        <div class="min-w-0">
+                            <p class="font-medium text-gray-800 dark:text-white leading-tight truncate">{{ $m['nama'] }}</p>
+                            <p class="text-xs text-gray-500">{{ $m['no'] }} · {{ $m['statusLabel'] }}</p>
+                        </div>
+                    </a>
+                    @endforeach
+                </div>
+            </div>
+            @endif
         </div>
     @else
-        <div id="sohibul-map" style="height:100%;width:100%;z-index:1;"></div>
+        <div id="sohibul-map" style="height:100%;width:100%;"></div>
     @endif
 </div>
 
-<div class="mt-4 text-xs text-gray-500 dark:text-gray-400 flex items-center justify-center gap-1">
-    Sistem peta didukung oleh <a href="https://leafletjs.com" target="_blank" class="text-primary-600 hover:underline">Leaflet.js</a> & <a href="https://www.geoapify.com/" target="_blank" class="text-primary-600 hover:underline">Geoapify</a>.
-</div>
+<p class="text-xs text-gray-400 dark:text-gray-500 mt-2">
+    Peta menggunakan <a href="https://leafletjs.com" target="_blank" class="underline">Leaflet.js</a>
+    dengan tile dari <a href="https://www.geoapify.com/" target="_blank" class="underline">Geoapify</a>.
+    Hanya sohibul dengan URL Google Maps yang ditampilkan ({{ count($markers) }} dari {{ $stats['total'] }}).
+</p>
 
 {{-- ── Styles ──────────────────────────────────────────────────────── --}}
 <style>
@@ -106,106 +145,79 @@
 @import url('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css');
 
 .filter-btn {
-    color: #4b5563;
+    background: #e5e7eb;
+    color: #374151;
 }
-.dark .filter-btn { color: #9ca3af; }
-.filter-btn:hover { background-color: #f3f4f6; color: #111827; }
-.dark .filter-btn:hover { background-color: rgba(255,255,255,0.05); color: #f9fafb; }
+.filter-btn:hover { opacity: 0.85; }
 .active-filter-btn {
-    background-color: rgba(var(--primary-600), 0.1) !important;
-    color: rgb(var(--primary-600)) !important;
-    border-color: rgba(var(--primary-600), 0.2) !important;
-}
-.dark .active-filter-btn {
-    background-color: rgba(var(--primary-500), 0.15) !important;
-    color: rgb(var(--primary-400)) !important;
-    border-color: rgba(var(--primary-500), 0.3) !important;
+    background: #1f2937 !important;
+    color: #ffffff !important;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
 }
 
 /* Custom Leaflet popup */
 .leaflet-popup-content-wrapper {
-    border-radius: 0.75rem !important;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15) !important;
     padding: 0 !important;
     overflow: hidden;
-    background: #ffffff !important;
-}
-.dark .leaflet-popup-content-wrapper {
-    background: #111827 !important;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #f3f4f6;
-}
-.leaflet-popup-tip-container { overflow: visible !important; }
-.leaflet-popup-tip {
-    background: #ffffff !important;
-}
-.dark .leaflet-popup-tip {
-    background: #111827 !important;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-top: none; border-left: none;
 }
 .leaflet-popup-content {
     margin: 0 !important;
-    min-width: 240px;
+    min-width: 220px;
 }
 .popup-inner {
-    padding: 1rem;
-    font-family: inherit;
-    font-size: 0.875rem;
+    padding: 14px 16px;
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 13px;
     color: #111827;
 }
-.dark .popup-inner { color: #f9fafb; }
 .popup-header {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 0.75rem;
-    padding-bottom: 0.75rem;
+    gap: 8px;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
     border-bottom: 1px solid #f3f4f6;
 }
-.dark .popup-header { border-bottom-color: rgba(255,255,255,0.1); }
 .popup-dot {
-    width: 0.75rem; height: 0.75rem;
-    border-radius: 9999px;
+    width: 12px; height: 12px;
+    border-radius: 50%;
     flex-shrink: 0;
 }
 .popup-name {
-    font-weight: 600;
-    font-size: 0.875rem;
-    line-height: 1.25;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 1.3;
 }
 .popup-grid {
     display: grid;
     grid-template-columns: auto 1fr;
-    gap: 0.375rem 0.75rem;
-    color: #4b5563;
-    font-size: 0.8125rem;
+    gap: 4px 10px;
+    color: #374151;
+    font-size: 12px;
 }
-.dark .popup-grid { color: #d1d5db; }
-.popup-label { color: #6b7280; font-weight: 500; }
-.dark .popup-label { color: #9ca3af; }
+.popup-label { color: #9ca3af; }
 .popup-badge {
     display: inline-block;
-    padding: 0.125rem 0.5rem;
+    padding: 2px 8px;
     border-radius: 9999px;
-    font-weight: 500;
-    font-size: 0.75rem;
+    font-weight: 600;
+    font-size: 11px;
 }
 .popup-footer {
-    margin-top: 0.875rem;
-    padding-top: 0.75rem;
+    margin-top: 10px;
+    padding-top: 8px;
     border-top: 1px solid #f3f4f6;
     display: flex;
-    gap: 0.75rem;
+    gap: 10px;
     flex-wrap: wrap;
 }
-.dark .popup-footer { border-top-color: rgba(255,255,255,0.1); }
 .popup-link {
-    font-size: 0.8125rem;
-    font-weight: 500;
+    font-size: 12px;
+    font-weight: 600;
     text-decoration: none;
 }
-.popup-link:hover { text-decoration: underline; }
 
 /* Layer switcher custom */
 .layer-control-panel {
@@ -215,33 +227,25 @@
     z-index: 1000;
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    background: #ffffff;
-    padding: 4px;
-    border-radius: 0.5rem;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-    border: 1px solid rgba(0, 0, 0, 0.05);
-}
-.dark .layer-control-panel {
-    background: #111827;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    gap: 5px;
 }
 .layer-btn {
     display: block;
-    background: transparent;
-    border-radius: 0.375rem;
+    background: rgba(255,255,255,0.93);
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
     padding: 6px 12px;
-    font-size: 0.75rem;
-    font-weight: 500;
-    color: #4b5563;
+    font-size: 11px;
+    font-weight: 600;
+    color: #374151;
     cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
     text-align: left;
 }
-.dark .layer-btn { color: #d1d5db; }
-.layer-btn:hover { background: #f3f4f6; color: #111827; }
-.dark .layer-btn:hover { background: rgba(255,255,255,0.05); color: #f9fafb; }
-.layer-btn.active-layer { background: rgba(var(--primary-600), 0.1); color: rgb(var(--primary-600)); }
-.dark .layer-btn.active-layer { background: rgba(var(--primary-500), 0.15); color: rgb(var(--primary-400)); }
+.layer-btn:hover { background: #f3f4f6; border-color: #6366f1; color: #6366f1; }
+.layer-btn.active-layer { background: #6366f1; color: #fff; border-color: #6366f1; }
 </style>
 
 {{-- ── Leaflet + Geoapify Script ───────────────────────────────────── --}}
@@ -257,38 +261,42 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ── Status config ─────────────────────────────────────────────
     const STATUS = {
-        0: { color: 'rgb(239, 68, 68)', border: '#ffffff', badgeBg: 'rgba(239, 68, 68, 0.1)', badgeText: 'rgb(220, 38, 38)', label: 'Belum Diproses' },
-        1: { color: 'rgb(245, 158, 11)', border: '#ffffff', badgeBg: 'rgba(245, 158, 11, 0.1)', badgeText: 'rgb(217, 119, 6)', label: 'Sedang Diproses' },
-        2: { color: 'rgb(34, 197, 94)', border: '#ffffff', badgeBg: 'rgba(34, 197, 94, 0.1)', badgeText: 'rgb(22, 163, 74)', label: 'Selesai' },
+        0: { color: '#ef4444', border: '#b91c1c', badgeBg: '#fee2e2', badgeText: '#b91c1c', label: 'Belum Diproses' },
+        1: { color: '#f59e0b', border: '#b45309', badgeBg: '#fef3c7', badgeText: '#b45309', label: 'Sedang Diproses' },
+        2: { color: '#22c55e', border: '#15803d', badgeBg: '#dcfce7', badgeText: '#15803d', label: 'Selesai' },
     };
-    
-    const isDark = document.documentElement.classList.contains('dark');
-    if (isDark) {
-        STATUS[0].border = '#111827'; STATUS[0].badgeText = 'rgb(248, 113, 113)';
-        STATUS[1].border = '#111827'; STATUS[1].badgeText = 'rgb(251, 191, 36)';
-        STATUS[2].border = '#111827'; STATUS[2].badgeText = 'rgb(74, 222, 128)';
-    }
 
     // ── Tile layers (Geoapify) ────────────────────────────────────
     const TILE_LAYERS = {
         'roadmap': {
-            label : 'Peta Jalan',
+            label : '🗺️ Peta',
             url   : `https://maps.geoapify.com/v1/tile/osm-carto/{z}/{x}/{y}.png?apiKey=${GEOAPIFY_KEY}`,
-            attr  : '© Geoapify',
+            attr  : '© <a href="https://www.geoapify.com/">Geoapify</a> © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        },
+        'toner': {
+            label : '⬛ Toner',
+            url   : `https://maps.geoapify.com/v1/tile/toner/{z}/{x}/{y}.png?apiKey=${GEOAPIFY_KEY}`,
+            attr  : '© <a href="https://www.geoapify.com/">Geoapify</a> © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
         },
         'satellite': {
-            label : 'Satelit',
+            label : '🛰️ Satelit',
             url   : `https://maps.geoapify.com/v1/tile/satellite/{z}/{x}/{y}.jpg?apiKey=${GEOAPIFY_KEY}`,
-            attr  : '© Geoapify',
+            attr  : '© <a href="https://www.geoapify.com/">Geoapify</a>',
         },
         'dark': {
-            label : 'Gelap',
+            label : '🌙 Dark',
             url   : `https://maps.geoapify.com/v1/tile/dark-matter/{z}/{x}/{y}.png?apiKey=${GEOAPIFY_KEY}`,
-            attr  : '© Geoapify',
+            attr  : '© <a href="https://www.geoapify.com/">Geoapify</a> © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        },
+        'terrain': {
+            label : '⛰️ Terrain',
+            url   : `https://maps.geoapify.com/v1/tile/klokantech-terrain/{z}/{x}/{y}.png?apiKey=${GEOAPIFY_KEY}`,
+            attr  : '© <a href="https://www.geoapify.com/">Geoapify</a> © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
         },
     };
 
     // ── Init Leaflet map ──────────────────────────────────────────
+    // Default center: Jogokariyan, Yogyakarta
     const defaultCenter = RAW_MARKERS.length > 0
         ? [RAW_MARKERS[0].lat, RAW_MARKERS[0].lng]
         : [-7.8014, 110.3649];
@@ -299,9 +307,10 @@ document.addEventListener('DOMContentLoaded', function () {
         zoomControl: true,
     });
 
-    let activeLayerKey = isDark ? 'dark' : 'roadmap';
-    let currentTile = L.tileLayer(TILE_LAYERS[activeLayerKey].url, {
-        attribution : TILE_LAYERS[activeLayerKey].attr,
+    // Pasang tile layer default
+    let activeLayerKey = 'roadmap';
+    let currentTile = L.tileLayer(TILE_LAYERS.roadmap.url, {
+        attribution : TILE_LAYERS.roadmap.attr,
         maxZoom     : 20,
     }).addTo(map);
 
@@ -330,16 +339,16 @@ document.addEventListener('DOMContentLoaded', function () {
     // ── SVG marker factory ────────────────────────────────────────
     function makeIcon(statusCode) {
         const s   = STATUS[statusCode] ?? STATUS[0];
-        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="30" height="40" viewBox="0 0 32 42">
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="42" viewBox="0 0 32 42">
             <path d="M16 0C9.37 0 4 5.37 4 12c0 9 12 30 12 30S28 21 28 12C28 5.37 22.63 0 16 0z"
                   fill="${s.color}" stroke="${s.border}" stroke-width="2"/>
-            <circle cx="16" cy="12" r="5" fill="white"/>
+            <circle cx="16" cy="12" r="6" fill="white" opacity="0.9"/>
         </svg>`;
         return L.icon({
             iconUrl    : 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg),
-            iconSize   : [30, 40],
-            iconAnchor : [15, 40],
-            popupAnchor: [0, -36],
+            iconSize   : [32, 42],
+            iconAnchor : [16, 42],
+            popupAnchor: [0, -40],
         });
     }
 
@@ -348,9 +357,9 @@ document.addEventListener('DOMContentLoaded', function () {
         const s    = STATUS[d.status] ?? STATUS[0];
         const nohpRaw = d.nohp ? d.nohp.toString().replace(/\D/g, '').replace(/^0/, '') : '';
         const waLink  = nohpRaw
-            ? `<a href="https://wa.me/62${nohpRaw}" target="_blank" class="popup-link" style="color:rgb(16, 185, 129)">WhatsApp</a>`
+            ? `<a href="https://wa.me/62${nohpRaw}" target="_blank" class="popup-link" style="color:#25D366">📱 WA: ${d.nohp}</a>`
             : '';
-        const mapsLink = `<a href="${d.urlmap}" target="_blank" class="popup-link" style="color:rgb(59, 130, 246)">Buka Maps</a>`;
+        const mapsLink = `<a href="${d.urlmap}" target="_blank" class="popup-link" style="color:#2563eb">📍 Google Maps</a>`;
 
         return `<div class="popup-inner">
             <div class="popup-header">
@@ -360,19 +369,18 @@ document.addEventListener('DOMContentLoaded', function () {
             <div class="popup-grid">
                 <span class="popup-label">No.</span>
                 <span><strong>${d.no}</strong></span>
-                <span class="popup-label">Paket</span>
+                <span class="popup-label">Jenis</span>
                 <span>${d.jenis}</span>
-                <span class="popup-label">RT/RW</span>
+                <span class="popup-label">RT / RW</span>
                 <span>RT ${d.rt} / RW ${d.rw ?? '-'}</span>
                 <span class="popup-label">Alamat</span>
                 <span>${d.alamat}</span>
                 <span class="popup-label">Bagian</span>
                 <span>${d.bagian}</span>
                 <span class="popup-label">Status</span>
-                <span>
-                    <span class="popup-badge" style="background:${s.badgeBg};color:${s.badgeText}">
-                        ${d.statusLabel}
-                    </span>
+                <span class="popup-badge"
+                      style="background:${s.badgeBg};color:${s.badgeText}">
+                    ${d.statusLabel}
                 </span>
             </div>
             <div class="popup-footer">
@@ -390,9 +398,10 @@ document.addEventListener('DOMContentLoaded', function () {
         return { marker, data: d };
     });
 
+    // ── Auto fit bounds ───────────────────────────────────────────
     if (allMarkers.length > 0) {
         const group = L.featureGroup(allMarkers.map(m => m.marker));
-        map.fitBounds(group.getBounds().pad(0.1));
+        map.fitBounds(group.getBounds().pad(0.15));
     }
 
     updateBadge();
@@ -403,10 +412,12 @@ document.addEventListener('DOMContentLoaded', function () {
     window.filterMarkers = function (status) {
         activeFilter = status;
 
+        // Update button styles
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active-filter-btn'));
         const activeBtn = document.getElementById('btn-' + status);
         if (activeBtn) activeBtn.classList.add('active-filter-btn');
 
+        // Show/hide markers
         allMarkers.forEach(({ marker, data }) => {
             const show = status === 'all' || data.status === status;
             if (show) {
@@ -422,10 +433,10 @@ document.addEventListener('DOMContentLoaded', function () {
     function updateBadge() {
         const visible = allMarkers.filter(({ marker }) => map.hasLayer(marker)).length;
         const badge   = document.getElementById('marker-count-badge');
-        if (badge) badge.textContent = `Menampilkan ${visible} titik lokasi`;
+        if (badge) badge.textContent = `📍 ${visible} dari ${allMarkers.length} sohibul ditampilkan`;
     }
 
-});
+}); // end DOMContentLoaded
 </script>
 @endif
 
