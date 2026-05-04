@@ -10,13 +10,13 @@ return new class extends Migration
     {
         Schema::create('activity_log', function (Blueprint $table) {
             $table->id();
-            $table->string('log_name')->nullable()->index();
+            $table->string('log_name')->nullable();
             $table->text('description');
             $table->nullableMorphs('subject', 'subject');
             $table->string('event')->nullable();
             $table->nullableMorphs('causer', 'causer');
-            $table->json('attribute_changes')->nullable();
             $table->json('properties')->nullable();
+            $table->uuid('batch_uuid')->nullable();
             $table->timestamps();
         });
     }
