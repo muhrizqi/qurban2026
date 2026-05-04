@@ -13,6 +13,12 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Illuminate\Database\Eloquent\Builder;
+use pxlrbt\FilamentExcel\Actions\Pages\ExportAction;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
+use pxlrbt\FilamentExcel\Columns\Column;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
+use Filament\Actions\BulkActionGroup;
+
 
 /**
  * Base class untuk semua halaman list Sohibul Sapi (admin/bendaharasapi).
@@ -50,6 +56,33 @@ abstract class BaseListSohibulSapi extends ListRecords
                     SohibulSapiResource::getUrl('create')
                     . ($jenis ? '?jenis=' . $jenis : '')
                 ),
+
+            ExportAction::make('download_excel_all')
+                ->label('Download Excel Keseluruhan')
+                ->icon('heroicon-o-arrow-down-tray')
+                ->color('success')
+                ->exports([
+                    ExcelExport::make()
+                        ->fromModel(SohibulSapi::class)
+                        ->withFilename('Sohibul_Sapi_Keseluruhan_' . date('Y-m-d'))
+                        ->withColumns([
+                            Column::make('no_sohibul')->heading('No. Sohibul'),
+                            Column::make('noinvoice')->heading('No. Invoice'),
+                            Column::make('nama')->heading('Nama'),
+                            Column::make('nama_kk')->heading('Nama KK'),
+                            Column::make('alamat')->heading('Alamat'),
+                            Column::make('rt')->heading('RT'),
+                            Column::make('rw')->heading('RW'),
+                            Column::make('nohp')->heading('No. HP'),
+                            Column::make('jenis')->heading('Jenis'),
+                            Column::make('nilaisepertuju')->heading('Nilai (Rp)'),
+                            Column::make('posisidana')->heading('Posisi Dana'),
+                            Column::make('bagiansohibul')->heading('Bagian'),
+                            Column::make('status')->heading('Status')->formatStateUsing(fn ($state) => SohibulSapi::STATUS_LABEL[$state] ?? $state),
+                            Column::make('keterangan')->heading('Keterangan'),
+                        ])
+                ])
+                ->visible(fn () => auth()->user()?->hasAnyRole(['admin', 'adminsohibul', 'bendaharasapi'])),
         ];
     }
 
@@ -176,7 +209,12 @@ abstract class BaseListSohibulSapi extends ListRecords
                         && $record->posisidana === 'Kas'
                     ),
             ])
-            ->bulkActions([])
+            ->bulkActions([
+                BulkActionGroup::make([
+                    ExportBulkAction::make()
+                        ->visible(fn () => auth()->user()?->hasAnyRole(['admin', 'adminsohibul', 'bendaharasapi'])),
+                ]),
+            ])
             // ── Empty state saat tidak ada data ──────────────────
             ->emptyStateHeading('Belum ada data ' . ($this->jenisLabel === 'Sohibul' ? 'sohibul' : $this->jenisLabel))
             ->emptyStateDescription('Klik tombol "Tambah ' . $this->jenisLabel . '" di atas untuk menambah data baru.')

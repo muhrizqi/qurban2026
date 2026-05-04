@@ -25,6 +25,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\ViewAction;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 
 class SohibulSapiResource extends Resource
 {
@@ -245,7 +246,11 @@ class SohibulSapiResource extends Resource
                 DeleteAction::make()->requiresConfirmation(),
             ])
             ->bulkActions([
-                BulkActionGroup::make([DeleteBulkAction::make()]),
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
+                    ExportBulkAction::make()
+                        ->visible(fn () => auth()->user()?->hasAnyRole(['admin', 'adminsohibul', 'bendaharasapi'])),
+                ]),
             ]);
     }
 
