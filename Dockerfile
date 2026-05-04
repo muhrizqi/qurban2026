@@ -37,3 +37,16 @@ USER root
 ENV PUID=999
 ENV PGID=999
 
+# Buat struktur folder storage dasar karena Volume Mount Easypanel akan 
+# menimpa folder storage bawaan Laravel menjadi kosong melompong.
+RUN mkdir -p /etc/entrypoint.d/ && \
+    echo '#!/bin/sh\n\
+mkdir -p /var/www/html/storage/framework/views\n\
+mkdir -p /var/www/html/storage/framework/cache/data\n\
+mkdir -p /var/www/html/storage/framework/sessions\n\
+mkdir -p /var/www/html/storage/logs\n\
+mkdir -p /var/www/html/storage/app/public\n\
+' > /etc/entrypoint.d/01-create-storage-dirs.sh && \
+    chmod +x /etc/entrypoint.d/01-create-storage-dirs.sh
+
+
