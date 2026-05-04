@@ -31,8 +31,9 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction
 # Selain itu kita butuh root untuk menanamkan script entrypoint ini.
 USER root
 
-# Pastikan folder storage dan bootstrap/cache selalu dimiliki oleh user 999
-# Ini penting jika Easypanel menggunakan fitur 'Volume Mount' yang bisa mengubah hak akses menjadi root.
-RUN mkdir -p /etc/entrypoint.d/ && \
-    echo '#!/bin/sh\nchown -R 999:999 /var/www/html/storage /var/www/html/bootstrap/cache' > /etc/entrypoint.d/99-fix-perms.sh && \
-    chmod +x /etc/entrypoint.d/99-fix-perms.sh
+# Mengaktifkan fitur perbaikan hak akses otomatis (auto fix permissions) dari ServerSideUp.
+# Dengan menset PUID dan PGID, server akan otomatis menjalankan chown untuk seluruh 
+# direktori /var/www/html (termasuk storage yang tertimpa oleh Volume Mount Easypanel) saat booting.
+ENV PUID=999
+ENV PGID=999
+
