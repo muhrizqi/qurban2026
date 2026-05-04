@@ -23,6 +23,9 @@ USER 999
 # Instal dependensi composer (tanpa dev)
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
+# Buat file dummy sqlite agar proses optimize tidak gagal karena mencari database default
+RUN touch database/database.sqlite
+
 # Optimasi Laravel
 RUN php artisan optimize:clear \
     && php artisan config:cache \
