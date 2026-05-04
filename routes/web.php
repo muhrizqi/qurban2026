@@ -17,3 +17,7 @@ Route::get('/sohibul/{sohibul}/kuitansi-pdf', function (SohibulSapi $sohibul) {
     $pdf = Pdf::loadView('pdf.kuitansi', ['sohibul' => $sohibul]);
     return $pdf->stream('kuitansi-' . $sohibul->no_sohibul . '.pdf');
 })->name('sohibul.kuitansi.pdf')->middleware(['auth']);
+
+Route::get('/publik/sohibul', function () {
+    return view('publik-sohibul');
+})->name('sohibul.publik');
