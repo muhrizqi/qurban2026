@@ -79,14 +79,24 @@ abstract class BaseListSohibulSapi extends ListRecords
                     ->when($this->filterPosisi, fn ($q) => $q->where('posisidana', $this->filterPosisi));
 
                 // Sort numerik: abaikan prefix (R, S, D, PB) — ambil angkanya saja
+                $driver = \Illuminate\Support\Facades\DB::connection()->getDriverName();
                 if ($filterJenis) {
                     // Halaman per-jenis: prefix tetap, sort angka di belakang prefix
                     $prefixLen = strlen(\App\Models\SohibulSapi::JENIS_PREFIX[$filterJenis] ?? '');
-                    $query->orderByRaw('CAST(SUBSTR(no_sohibul, ' . ($prefixLen + 1) . ') AS INTEGER) ASC');
+                    if ($driver === 'pgsql') {
+                        $query->orderByRaw('CAST(SUBSTR(no_sohibul, ' . ($prefixLen + 1) . ') AS INTEGER) ASC');
+                    } else {
+                        $query->orderByRaw('CAST(SUBSTR(no_sohibul, ' . ($prefixLen + 1) . ') AS UNSIGNED) ASC');
+                    }
                 } else {
                     // Halaman per-RW atau Luar: sort by jenis dulu, lalu angka numerik
-                    $query->orderBy('jenis')
-                          ->orderByRaw("CAST(TRIM(no_sohibul, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz') AS INTEGER) ASC");
+                    if ($driver === 'pgsql') {
+                        $query->orderBy('jenis')
+                              ->orderByRaw("CAST(REGEXP_REPLACE(no_sohibul, '[^0-9]', '', 'g') AS INTEGER) ASC");
+                    } else {
+                        $query->orderBy('jenis')
+                              ->orderByRaw("CAST(TRIM(no_sohibul, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz') AS UNSIGNED) ASC");
+                    }
                 }
             })
             ->columns([

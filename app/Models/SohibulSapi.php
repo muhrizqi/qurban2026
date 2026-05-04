@@ -56,10 +56,12 @@ class SohibulSapi extends Model
     public static function nextNoSohibul(string $jenis): string
     {
         $prefix = self::JENIS_PREFIX[$jenis] ?? '';
-        $last   = self::where('jenis', $jenis)
-                      ->orderByRaw('CAST(SUBSTRING(no_sohibul, ' . (strlen($prefix) + 1) . ') AS UNSIGNED) DESC')
-                      ->value('no_sohibul');
-        $lastNo = $last ? (int) substr($last, strlen($prefix)) : 0;
+        
+        $maxNo = self::where('jenis', $jenis)->get()->max(function ($model) use ($prefix) {
+            return (int) substr($model->no_sohibul, strlen($prefix));
+        });
+        
+        $lastNo = $maxNo ?: 0;
         return $prefix . ($lastNo + 1);
     }
 
