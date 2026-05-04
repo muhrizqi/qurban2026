@@ -12,11 +12,13 @@ RUN apt-get update \
 # Instal ekstensi PHP untuk PostgreSQL (pdo_pgsql)
 RUN install-php-extensions pdo_pgsql zip bcmath intl opcache
 
+# Copy seluruh file proyek ke dalam container (saat masih sebagai root)
+USER root
+COPY --chown=999:999 . /var/www/html/
+RUN chown -R 999:999 /var/www/html
+
 # Kembali ke user webserver (www-data / 999 di serversideup)
 USER 999
-
-# Copy seluruh file proyek ke dalam container
-COPY --chown=999:999 . /var/www/html/
 
 # Instal dependensi composer (tanpa dev)
 RUN composer install --no-dev --optimize-autoloader --no-interaction
