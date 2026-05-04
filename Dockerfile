@@ -10,7 +10,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 # Instal ekstensi PHP untuk PostgreSQL (pdo_pgsql)
-RUN install-php-extensions pdo_pgsql zip bcmath intl opcache
+RUN install-php-extensions pdo_pgsql zip bcmath intl opcache gd
 
 # Copy seluruh file proyek ke dalam container (saat masih sebagai root)
 USER root
