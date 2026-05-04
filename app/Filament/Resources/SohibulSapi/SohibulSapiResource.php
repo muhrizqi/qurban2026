@@ -168,26 +168,34 @@ class SohibulSapiResource extends Resource
                 ->options(SohibulSapi::POSISI_OPTIONS)
                 ->required(),
 
-            // ── Kwitansi ───────────────────────────────────────
-            Placeholder::make('kwitansi_link')
-                ->label('Link Kwitansi Eksternal')
-                ->content(fn ($record) => $record && str_starts_with($record->kwitansi ?? '', 'http') 
-                    ? new HtmlString('<a href="'.$record->kwitansi.'" target="_blank" style="color:#2563eb;text-decoration:underline;">Buka Kwitansi (Situs Luar)</a>') 
-                    : '-')
-                ->visible(fn ($record) => $record && str_starts_with($record->kwitansi ?? '', 'http')),
+            // ── Kwitansi (Hybrid: URL or Upload) ───────────────
+            TextInput::make('kwitansi')
+                ->label('Link / Path Kwitansi')
+                ->placeholder('https://... atau upload file di bawah')
+                ->helperText('Isi dengan URL eksternal (HTTP) atau biarkan terisi otomatis saat upload file.')
+                ->live(),
 
-            FileUpload::make('kwitansi')
-                ->label('Foto Kwitansi')
+            FileUpload::make('kwitansi_upload')
+                ->label('Upload Foto Kwitansi')
                 ->image()
                 ->disk('public')
                 ->directory('kwitansi')
                 ->imagePreviewHeight('200')
                 ->nullable()
-                ->helperText(fn ($record) => $record && str_starts_with($record->kwitansi ?? '', 'http') 
-                    ? 'Data saat ini adalah link eksternal. Upload file baru jika ingin menggantinya dengan foto lokal.' 
-                    : null)
-                // Cegah hapus data otomatis jika state-nya adalah URL eksternal (yang gagal terload di FileUpload)
-                ->dehydrated(fn ($state) => !is_string($state) || !str_starts_with($state, 'http')),
+                ->live()
+                // Saat upload selesai, masukkan path-nya ke TextInput kwitansi
+                ->afterStateUpdated(function ($state, Set $set) {
+                    if ($state) {
+                        $set('kwitansi', $state);
+                    }
+                })
+                // Saat form diload, jika datanya bukan URL, tampilkan di preview upload
+                ->afterStateHydrated(function ($state, Set $set, $record) {
+                    if ($record && $record->kwitansi && !str_starts_with($record->kwitansi, 'http')) {
+                        $set('kwitansi_upload', $record->kwitansi);
+                    }
+                })
+                ->dehydrated(false), // Data asli disimpan via TextInput kwitansi
 
             // ── URL Maps ───────────────────────────────────────
             TextInput::make('urlmap')
