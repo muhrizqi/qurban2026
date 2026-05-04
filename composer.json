@@ -12,6 +12,7 @@
         "laravel/framework": "^13.0",
         "laravel/tinker": "^3.0",
         "pxlrbt/filament-excel": "^3.6",
+        "spatie/laravel-activitylog": "^5.0",
         "spatie/laravel-backup": "*",
         "spatie/laravel-permission": "^7.4"
     },
