@@ -61,7 +61,16 @@ class ActivityLogResource extends Resource
                         if (!$state) return '-';
                         
                         $description = (string) $record->description;
-                        $properties = is_array($state) ? $state : $state->toArray();
+                        
+                        // Coba decode jika masih string (antisipasi masalah casting)
+                        $properties = $state;
+                        if (is_string($properties)) {
+                            $properties = json_decode($properties, true);
+                        } elseif (is_object($properties) && method_exists($properties, 'toArray')) {
+                            $properties = $properties->toArray();
+                        }
+                        
+                        if (!is_array($properties)) return '-';
                         
                         $old = $properties['old'] ?? [];
                         $new = $properties['attributes'] ?? [];
