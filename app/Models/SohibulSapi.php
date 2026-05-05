@@ -4,12 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Spatie\Activitylog\Loggable;
+use Spatie\Activitylog\Models\Concerns\HasActivity;
 use Spatie\Activitylog\LogOptions;
 
 class SohibulSapi extends Model
 {
-    use Loggable;
+    use HasActivity;
 
     public function getActivitylogOptions(): LogOptions
     {
