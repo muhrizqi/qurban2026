@@ -40,7 +40,7 @@ class ActivityLogResource extends Resource
                 TextColumn::make('description')
                     ->label('Aksi')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn ($state, Activity $record): string => match ($record->event) {
                         'created' => 'success',
                         'updated' => 'warning',
                         'deleted' => 'danger',
@@ -52,7 +52,10 @@ class ActivityLogResource extends Resource
                     ->getStateUsing(function ($record) {
                         $props = $record->properties;
                         if (is_string($props)) $props = json_decode($props, true);
-                        return $props['attributes']['no_sohibul'] ?? $props['no_sohibul'] ?? '-';
+                        
+                        return $props['attributes']['no_sohibul'] ?? 
+                               $record->subject?->no_sohibul ?? 
+                               (str_contains($record->description, 'sohibul ') ? str_after($record->description, 'sohibul ') : '-');
                     })
                     ->searchable(),
 
@@ -66,10 +69,10 @@ class ActivityLogResource extends Resource
                 TextColumn::make('properties')
                     ->label('Perubahan')
                     ->html()
-                    ->formatStateUsing(function ($state, $record) {
+                    ->formatStateUsing(function ($state, Activity $record) {
                         if (!$state) return '-';
                         
-                        $description = (string) $record->description;
+                        $event = (string) $record->event;
                         
                         // Coba decode jika masih string (antisipasi masalah casting)
                         $properties = $state;
@@ -89,7 +92,7 @@ class ActivityLogResource extends Resource
                         $out = '<div style="font-size: 11px; line-height: 1.2;">';
                         
                         // Jika created
-                        if ($description === 'created') {
+                        if ($event === 'created') {
                             $data = !empty($new) ? $new : $properties;
                             $noSohibul = $data['no_sohibul'] ?? '-';
                             $nama = $data['nama'] ?? '-';
@@ -102,6 +105,8 @@ class ActivityLogResource extends Resource
                             }
                         } else {
                             // Jika updated atau lainnya
+                            if (empty($new)) return '-';
+                            
                             foreach ($new as $key => $val) {
                                 if ($key === 'updated_at') continue;
                                 $oldVal = $old[$key] ?? '—';
