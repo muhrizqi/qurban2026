@@ -336,6 +336,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
     document.getElementById('sohibul-map').appendChild(layerPanel);
 
+    // ── Drone Image Overlay (Orthomosaic Jogokariyan) ─────────────
+    const droneUrl = '{{ asset("images/drone.jpg") }}';
+    const droneBounds = [
+        [-7.8277660612048, 110.36035892223], // Kiri Bawah (SouthWest)
+        [-7.8212767462448, 110.36813197759]  // Kanan Atas (NorthEast)
+    ];
+    
+    // Create the overlay but make it a toggleable layer in the future if needed
+    // For now, it will always be visible on top of the base map
+    const droneLayer = L.imageOverlay(droneUrl, droneBounds, {
+        opacity: 0.95,
+        interactive: false,
+        zIndex: 10
+    }).addTo(map);
+
     // ── SVG marker factory ────────────────────────────────────────
     function makeIcon(statusCode) {
         const s   = STATUS[statusCode] ?? STATUS[0];
