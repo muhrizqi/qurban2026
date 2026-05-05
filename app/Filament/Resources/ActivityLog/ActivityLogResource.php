@@ -2,6 +2,9 @@
 
 namespace App\Filament\Resources\ActivityLog;
 
+use App\Models\SohibulSapi;
+use BackedEnum;
+use UnitEnum;
 use App\Filament\Resources\ActivityLog\Pages;
 use Filament\Resources\Resource;
 use Filament\Tables\Table;
@@ -13,8 +16,8 @@ class ActivityLogResource extends Resource
 {
     protected static ?string $model = Activity::class;
     protected static ?string $navigationLabel = 'Log Aktivitas';
-    protected static ?string $navigationGroup = 'Sistem';
-    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
+    protected static UnitEnum|string|null $navigationGroup = 'Sistem';
+    protected static BackedEnum|string|null $navigationIcon = 'heroicon-o-clipboard-document-list';
 
     public static function canViewAny(): bool
     {
@@ -66,8 +69,12 @@ class ActivityLogResource extends Resource
                         
                         // Jika created
                         if (empty($old) && !empty($new)) {
+                            $noSohibul = $new['no_sohibul'] ?? '-';
+                            $nama = $new['nama'] ?? '-';
+                            $out .= "<div class='mb-2 text-blue-600 font-bold'>Data Baru: {$noSohibul} ({$nama})</div>";
+                            
                             foreach ($new as $key => $val) {
-                                if ($key === 'updated_at' || $key === 'created_at') continue;
+                                if (in_array($key, ['updated_at', 'created_at', 'id'])) continue;
                                 $out .= "<div><span class='font-bold'>{$key}</span>: " . e($val) . "</div>";
                             }
                         } else {
