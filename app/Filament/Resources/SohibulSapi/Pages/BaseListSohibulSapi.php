@@ -127,6 +127,11 @@ abstract class BaseListSohibulSapi extends ListRecords
                     ->when($filterLuar,   fn ($q) => $q->where('rt', 'non_warga'))
                     ->when($this->filterPosisi, fn ($q) => $q->where('posisidana', $this->filterPosisi));
 
+                // Prioritas: Belum ada Map muncul di atas khusus untuk role petugasmap
+                if (auth()->user()?->hasRole('petugasmap')) {
+                    $query->orderByRaw("CASE WHEN urlmap IS NULL OR urlmap = '' THEN 0 ELSE 1 END ASC");
+                }
+
                 // Sort numerik: abaikan prefix (R, S, D, PB) — ambil angkanya saja
                 $driver = \Illuminate\Support\Facades\DB::connection()->getDriverName();
                 if ($filterJenis) {
