@@ -25,8 +25,8 @@ RUN composer update --no-dev --optimize-autoloader --no-interaction --ignore-pla
 
 # Optimasi (config, route, view) akan dijalankan otomatis oleh image serversideup 
 # saat container pertama kali booting (entrypoint).
-# Namun kita paksa bersihkan view cache lama agar tidak konflik versi
-RUN php artisan view:clear && php artisan cache:clear
+# Hapus cache lama secara manual (lebih aman daripada artisan saat build)
+RUN rm -rf storage/framework/views/*.php storage/framework/cache/data/*
 
 # PENTING: ServerSideUp menggunakan S6-Overlay yang membutuhkan akses ROOT 
 # saat pertama kali container dijalankan (untuk setting konfigurasi nginx dll).
