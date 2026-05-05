@@ -21,7 +21,7 @@ RUN chown -R 999:999 /var/www/html
 USER 999
 
 # Instal dependensi composer (tanpa dev)
-RUN composer install --no-dev --optimize-autoloader --no-interaction
+RUN composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-reqs
 
 # Optimasi (config, route, view) akan dijalankan otomatis oleh image serversideup 
 # saat container pertama kali booting (entrypoint).
