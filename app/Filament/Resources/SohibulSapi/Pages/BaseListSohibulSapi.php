@@ -40,8 +40,15 @@ abstract class BaseListSohibulSapi extends ListRecords
 
         if ($user->hasRole('petugasmap')) {
             // Petugas Map hanya bisa melihat menu RW dan Jamaah Luar
-            $className = static::class;
-            return str_contains($className, 'RW') || str_contains($className, 'Luar');
+            $allowedPages = [
+                'ListSohibulSapiRW9',
+                'ListSohibulSapiRW10',
+                'ListSohibulSapiRW11',
+                'ListSohibulSapiRW12',
+                'ListSohibulSapiLuar',
+            ];
+            $className = class_basename(static::class);
+            return in_array($className, $allowedPages);
         }
 
         return $user->hasAnyRole(['admin', 'adminsohibul', 'bendaharasapi']);
