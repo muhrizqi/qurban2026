@@ -57,7 +57,15 @@ class ActivityLogResource extends Resource
                                $record->subject?->no_sohibul ?? 
                                (str_contains($record->description, 'sohibul ') ? str_after($record->description, 'sohibul ') : '-');
                     })
-                    ->searchable(),
+                    ->searchable(query: function ($query, string $search) {
+                        $driver = $query->getConnection()->getDriverName();
+                        if ($driver === 'pgsql') {
+                            return $query->whereRaw("properties::text ILIKE ?", ["%{$search}%"])
+                                         ->orWhere('description', 'ilike', "%{$search}%");
+                        }
+                        return $query->where('properties', 'like', "%{$search}%")
+                                     ->orWhere('description', 'like', "%{$search}%");
+                    }),
 
                 TextColumn::make('subject_type')
                     ->label('Data')
