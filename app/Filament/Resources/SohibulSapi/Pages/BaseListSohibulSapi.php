@@ -157,11 +157,16 @@ abstract class BaseListSohibulSapi extends ListRecords
                     ->label('Alamat & Kontak')
                     ->html()
                     ->formatStateUsing(function ($state, SohibulSapi $record): string {
+                        $isPetugasMap = auth()->user()?->hasRole('petugasmap');
                         $out = e($state);
-                        if ($record->nohp) {
+
+                        // No HP (tampilkan jika bukan petugasmap atau jika memang dibutuhkan)
+                        if ($record->nohp && ! $isPetugasMap) {
                             $out .= '<br><small>📱 ' . e($record->nohp) . '</small>';
                         }
-                        if ($record->kwitansi) {
+
+                        // Kwitansi (Sembunyikan untuk petugasmap)
+                        if ($record->kwitansi && ! $isPetugasMap) {
                             $url = str_starts_with($record->kwitansi, 'http') 
                                 ? $record->kwitansi 
                                 : asset('storage/' . $record->kwitansi);
@@ -169,6 +174,8 @@ abstract class BaseListSohibulSapi extends ListRecords
                             $out .= ' &nbsp;<a href="' . $url . '" target="_blank" '
                                   . 'style="color:#2563eb;font-size:0.75rem">📄 Kwitansi</a>';
                         }
+
+                        // Maps (Penting untuk petugasmap)
                         if ($record->urlmap) {
                             $out .= ' &nbsp;<a href="' . e($record->urlmap) . '" target="_blank" '
                                   . 'style="color:#16a34a;font-size:0.75rem">📍 Maps</a>';
@@ -182,7 +189,7 @@ abstract class BaseListSohibulSapi extends ListRecords
                     ->badge()
                     ->formatStateUsing(fn ($state) => SohibulSapi::STATUS_LABEL[$state] ?? '-')
                     ->color(fn ($state) => SohibulSapi::STATUS_COLOR[$state] ?? 'gray')
-                    ->hidden(fn () => auth()->user()?->hasAnyRole(['admin', 'adminsohibul'])),
+                    ->hidden(fn () => auth()->user()?->hasAnyRole(['admin', 'adminsohibul', 'petugasmap'])),
             ])
             ->filters([])
             ->actions([
