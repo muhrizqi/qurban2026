@@ -16,7 +16,9 @@ class SohibulSapi extends Model
         return LogOptions::defaults()
             ->logFillable()
             ->logOnlyDirty()
-            ->dontSubmitEmptyLogs();
+            ->dontSubmitEmptyLogs()
+            ->useLogName('Sohibul Sapi')
+            ->setDescriptionForEvent(fn(string $eventName) => "{$eventName} sohibul " . ($this->no_sohibul ?? '-'));
     }
 
     protected $table = 'sohibul_sapi';

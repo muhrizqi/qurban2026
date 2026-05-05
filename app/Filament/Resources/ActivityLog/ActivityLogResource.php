@@ -47,6 +47,15 @@ class ActivityLogResource extends Resource
                         default   => 'gray',
                     }),
                 
+                TextColumn::make('no_sohibul')
+                    ->label('No Sohibul')
+                    ->getStateUsing(function ($record) {
+                        $props = $record->properties;
+                        if (is_string($props)) $props = json_decode($props, true);
+                        return $props['attributes']['no_sohibul'] ?? $props['no_sohibul'] ?? '-';
+                    })
+                    ->searchable(),
+
                 TextColumn::make('subject_type')
                     ->label('Data')
                     ->formatStateUsing(fn($state) => class_basename($state)),
