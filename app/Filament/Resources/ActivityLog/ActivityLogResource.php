@@ -66,19 +66,20 @@ class ActivityLogResource extends Resource
                 TextColumn::make('subject_id')
                     ->label('ID Ref'),
 
-                TextColumn::make('properties')
+                TextColumn::make('changes_summary')
                     ->label('Perubahan')
                     ->html()
-                    ->formatStateUsing(function ($state, Activity $record) {
+                    ->getStateUsing(function (Activity $record) {
                         $event = (string) ($record->event ?? $record->description);
                         $changes = $record->changes();
+                        $state = $record->properties;
                         
                         $old = $changes['old'] ?? [];
                         $new = $changes['attributes'] ?? [];
 
                         if (empty($old) && empty($new)) {
                             // Jika changes() kosong, coba manual dari properties (untuk created)
-                            $new = is_array($state) ? ($state['attributes'] ?? $state) : json_decode((string)$state, true)['attributes'] ?? [];
+                            $new = is_array($state) ? ($state['attributes'] ?? $state) : (json_decode((string)$state, true)['attributes'] ?? []);
                             if (empty($new)) return '-';
                         }
 
