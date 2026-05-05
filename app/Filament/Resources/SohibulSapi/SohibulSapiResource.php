@@ -192,7 +192,12 @@ class SohibulSapiResource extends Resource
                 ->label('Link URL Kwitansi')
                 ->placeholder('https://...')
                 ->url()
-                ->visible(fn (Get $get) => (bool) $get('is_manual_url')),
+                ->visible(fn (Get $get) => (bool) $get('is_manual_url'))
+                ->afterStateHydrated(function (TextInput $component, $state, $record) {
+                    if ($record && str_starts_with($record->kwitansi ?? '', 'http')) {
+                        $component->state($record->kwitansi);
+                    }
+                }),
 
             // ── URL Maps ───────────────────────────────────────
             TextInput::make('urlmap')
