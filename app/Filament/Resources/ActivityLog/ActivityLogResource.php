@@ -70,43 +70,33 @@ class ActivityLogResource extends Resource
                     ->label('Perubahan')
                     ->html()
                     ->formatStateUsing(function ($state, Activity $record) {
-                        if (!$state) return '-';
+                        $event = (string) ($record->event ?? $record->description);
+                        $changes = $record->changes();
                         
-                        $event = (string) $record->event;
-                        
-                        // Coba decode jika masih string (antisipasi masalah casting)
-                        $properties = $state;
-                        if (is_string($properties)) {
-                            $properties = json_decode($properties, true);
-                        } elseif (is_object($properties) && method_exists($properties, 'toArray')) {
-                            $properties = $properties->toArray();
+                        $old = $changes['old'] ?? [];
+                        $new = $changes['attributes'] ?? [];
+
+                        if (empty($old) && empty($new)) {
+                            // Jika changes() kosong, coba manual dari properties (untuk created)
+                            $new = is_array($state) ? ($state['attributes'] ?? $state) : json_decode((string)$state, true)['attributes'] ?? [];
+                            if (empty($new)) return '-';
                         }
-                        
-                        if (!is_array($properties)) return '-';
-                        
-                        $old = $properties['old'] ?? [];
-                        $new = $properties['attributes'] ?? [];
-                        
-                        if (empty($old) && empty($new)) return '-';
 
                         $out = '<div style="font-size: 11px; line-height: 1.2;">';
                         
                         // Jika created
-                        if ($event === 'created') {
-                            $data = !empty($new) ? $new : $properties;
-                            $noSohibul = $data['no_sohibul'] ?? '-';
-                            $nama = $data['nama'] ?? '-';
+                        if (str_contains($event, 'created')) {
+                            $noSohibul = $new['no_sohibul'] ?? '-';
+                            $nama = $new['nama'] ?? '-';
                             $out .= "<div style='margin-bottom: 8px; color: #2563eb; font-weight: bold; font-size: 13px;'>Data Baru: {$noSohibul} ({$nama})</div>";
                             
-                            foreach ($data as $key => $val) {
+                            foreach ($new as $key => $val) {
                                 if (in_array($key, ['updated_at', 'created_at', 'id'])) continue;
                                 if (is_array($val)) $val = json_encode($val);
                                 $out .= "<div><span style='font-weight: bold;'>{$key}</span>: " . e($val) . "</div>";
                             }
                         } else {
-                            // Jika updated atau lainnya
-                            if (empty($new)) return '-';
-                            
+                            // Jika updated
                             foreach ($new as $key => $val) {
                                 if ($key === 'updated_at') continue;
                                 $oldVal = $old[$key] ?? '—';
