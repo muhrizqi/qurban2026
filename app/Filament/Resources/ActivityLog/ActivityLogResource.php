@@ -57,12 +57,14 @@ class ActivityLogResource extends Resource
                 TextColumn::make('properties')
                     ->label('Perubahan')
                     ->html()
-                    ->formatStateUsing(function ($state, Activity $record) {
+                    ->formatStateUsing(function ($state, $record) {
                         if (!$state) return '-';
                         
-                        $description = $record->description;
-                        $old = $state['old'] ?? [];
-                        $new = $state['attributes'] ?? [];
+                        $description = (string) $record->description;
+                        $properties = is_array($state) ? $state : $state->toArray();
+                        
+                        $old = $properties['old'] ?? [];
+                        $new = $properties['attributes'] ?? [];
                         
                         if (empty($old) && empty($new)) return '-';
 
@@ -70,21 +72,25 @@ class ActivityLogResource extends Resource
                         
                         // Jika created
                         if ($description === 'created') {
-                            $data = !empty($new) ? $new : $state;
+                            $data = !empty($new) ? $new : $properties;
                             $noSohibul = $data['no_sohibul'] ?? '-';
                             $nama = $data['nama'] ?? '-';
                             $out .= "<div style='margin-bottom: 8px; color: #2563eb; font-weight: bold; font-size: 13px;'>Data Baru: {$noSohibul} ({$nama})</div>";
                             
                             foreach ($data as $key => $val) {
                                 if (in_array($key, ['updated_at', 'created_at', 'id'])) continue;
+                                if (is_array($val)) $val = json_encode($val);
                                 $out .= "<div><span style='font-weight: bold;'>{$key}</span>: " . e($val) . "</div>";
                             }
                         } else {
-                            // Jika updated
+                            // Jika updated atau lainnya
                             foreach ($new as $key => $val) {
                                 if ($key === 'updated_at') continue;
                                 $oldVal = $old[$key] ?? '—';
                                 if ($oldVal == $val) continue;
+                                
+                                if (is_array($val)) $val = json_encode($val);
+                                if (is_array($oldVal)) $oldVal = json_encode($oldVal);
                                 
                                 $out .= "<div style='margin-bottom: 4px;'><strong>{$key}</strong>: <br>"
                                       . "<span style='color: #ef4444; text-decoration: line-through;'>" . e($oldVal) . "</span> &rarr; "
