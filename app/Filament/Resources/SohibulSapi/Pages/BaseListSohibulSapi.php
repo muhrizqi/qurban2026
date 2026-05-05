@@ -35,7 +35,16 @@ abstract class BaseListSohibulSapi extends ListRecords
 
     public static function shouldRegisterNavigation(array $parameters = []): bool
     {
-        return auth()->user()?->hasAnyRole(['admin', 'adminsohibul', 'bendaharasapi']);
+        $user = auth()->user();
+        if (!$user) return false;
+
+        if ($user->hasRole('petugasmap')) {
+            // Petugas Map hanya bisa melihat menu RW dan Jamaah Luar
+            $className = static::class;
+            return str_contains($className, 'RW') || str_contains($className, 'Luar');
+        }
+
+        return $user->hasAnyRole(['admin', 'adminsohibul', 'bendaharasapi']);
     }
 
     public static function getNavigationGroup(): ?string
@@ -197,8 +206,8 @@ abstract class BaseListSohibulSapi extends ListRecords
                     ->label('')
                     ->tooltip('Edit')
                     ->hidden(fn (SohibulSapi $record): bool =>
-                        auth()->user()?->hasRole('adminsohibul')
-                        && $record->posisidana === 'Kas'
+                        (auth()->user()?->hasRole('adminsohibul') && $record->posisidana === 'Kas') ||
+                        (auth()->user()?->hasRole('petugasmap') && $record->bagiansohibul === 'tidak_diambil')
                     ),
                 DeleteAction::make()
                     ->label('')

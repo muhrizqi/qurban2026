@@ -55,7 +55,7 @@ class SohibulSapiResource extends Resource
     public static function form(Schema $schema): Schema
     {
         $user             = auth()->user();
-        $isAdminBendahara = $user?->hasAnyRole(['admin', 'adminsohibul', 'bendaharasapi']);
+        $isPetugasMap     = $user?->hasRole('petugasmap');
 
         return $schema->components([
 
@@ -65,6 +65,7 @@ class SohibulSapiResource extends Resource
                 ->options(SohibulSapi::JENIS_OPTIONS)
                 ->required()
                 ->live()
+                ->disabled($isPetugasMap)
                 ->afterStateUpdated(function (?string $state, Set $set, Get $get, $record) {
                     if (! $state) return;
 
@@ -82,6 +83,7 @@ class SohibulSapiResource extends Resource
                 ->label('No. Sohibul')
                 ->required()
                 ->maxLength(20)
+                ->disabled($isPetugasMap)
                 ->rule(fn (Get $get, ?Model $record): Closure =>
                     function (string $attribute, mixed $value, Closure $fail) use ($get, $record): void {
                         $query = SohibulSapi::where('no_sohibul', $value);
@@ -102,25 +104,29 @@ class SohibulSapiResource extends Resource
             TextInput::make('nama')
                 ->label('Nama')
                 ->required()
-                ->maxLength(255),
+                ->maxLength(255)
+                ->disabled($isPetugasMap),
 
             // ── Nama KK ────────────────────────────────────────
             TextInput::make('nama_kk')
                 ->label('Nama Kepala Keluarga')
                 ->required()
-                ->maxLength(255),
+                ->maxLength(255)
+                ->disabled($isPetugasMap),
 
             // ── No HP ──────────────────────────────────────────
             TextInput::make('nohp')
                 ->label('No. HP / WA')
                 ->tel()
-                ->maxLength(20),
+                ->maxLength(20)
+                ->disabled($isPetugasMap),
 
             // ── Alamat ─────────────────────────────────────────
             Textarea::make('alamat')
                 ->label('Alamat')
                 ->required()
-                ->rows(2),
+                ->rows(2)
+                ->disabled($isPetugasMap),
 
             // ── RT ─────────────────────────────────────────────
             Select::make('rt')
@@ -128,6 +134,7 @@ class SohibulSapiResource extends Resource
                 ->options(static::rtOptions())
                 ->required()
                 ->live()
+                ->disabled($isPetugasMap)
                 ->afterStateUpdated(function (?string $state, Set $set) {
                     if ($state === 'non_warga') {
                         $set('rw', null);
@@ -151,7 +158,8 @@ class SohibulSapiResource extends Resource
                 ->label('Bagian Sohibul')
                 ->options(SohibulSapi::BAGIAN_OPTIONS)
                 ->required()
-                ->default('diantarkan'),
+                ->default('diantarkan')
+                ->disabled($isPetugasMap),
 
             // ── Nilai Sepertuju ────────────────────────────────
             TextInput::make('nilaisepertuju')
@@ -159,7 +167,7 @@ class SohibulSapiResource extends Resource
                 ->numeric()
                 ->prefix('Rp')
                 ->live()
-                ->disabled(fn (Get $get) => $get('jenis') !== 'PRIBADI' && $get('jenis') !== null && $get('jenis') !== '')
+                ->disabled(fn (Get $get) => $isPetugasMap || ($get('jenis') !== 'PRIBADI' && $get('jenis') !== null && $get('jenis') !== ''))
                 ->dehydrated()
                 ->helperText('Otomatis terisi sesuai jenis. Khusus PRIBADI diisi manual.'),
 
@@ -167,12 +175,14 @@ class SohibulSapiResource extends Resource
             Select::make('posisidana')
                 ->label('Posisi Dana')
                 ->options(SohibulSapi::POSISI_OPTIONS)
-                ->required(),
+                ->required()
+                ->disabled($isPetugasMap),
 
             // ── Kwitansi (Toggle: Upload vs URL) ──────────────
             Checkbox::make('is_manual_url')
                 ->label('Input Link URL Luar (Bukan Upload)')
                 ->live()
+                ->disabled($isPetugasMap)
                 ->afterStateHydrated(function ($state, Set $set, $record) {
                     if ($record && str_starts_with($record->kwitansi ?? '', 'http')) {
                         $set('is_manual_url', true);
@@ -186,12 +196,14 @@ class SohibulSapiResource extends Resource
                 ->directory('kwitansi')
                 ->imagePreviewHeight('200')
                 ->nullable()
+                ->disabled($isPetugasMap)
                 ->visible(fn (Get $get) => ! $get('is_manual_url')),
 
             TextInput::make('kwitansi')
                 ->label('Link URL Kwitansi')
                 ->placeholder('https://...')
                 ->url()
+                ->disabled($isPetugasMap)
                 ->visible(fn (Get $get) => (bool) $get('is_manual_url'))
                 ->afterStateHydrated(function (TextInput $component, $state, $record) {
                     if ($record && str_starts_with($record->kwitansi ?? '', 'http')) {
@@ -232,7 +244,8 @@ class SohibulSapiResource extends Resource
             Textarea::make('keterangan')
                 ->label('Keterangan')
                 ->rows(2)
-                ->nullable(),
+                ->nullable()
+                ->disabled($isPetugasMap),
         ]);
     }
 
