@@ -15,7 +15,7 @@
         "laravel/framework": "^13.0",
         "laravel/tinker": "^3.0",
         "pxlrbt/filament-excel": "^3.6",
-        "spatie/laravel-activitylog": "^5.0",
+        "spatie/laravel-activitylog": "*",
         "spatie/laravel-backup": "*",
         "spatie/laravel-permission": "^7.4"
     },
@@ -82,6 +82,9 @@
         }
     },
     "config": {
+        "platform": {
+            "php": "8.4.0"
+        },
         "optimize-autoloader": true,
         "preferred-install": "dist",
         "sort-packages": true,
