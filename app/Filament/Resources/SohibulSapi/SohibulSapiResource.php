@@ -199,33 +199,51 @@ class SohibulSapiResource extends Resource
                 }),
 
             FileUpload::make('kwitansi')
-                ->label('Upload Foto Kwitansi')
+                ->label('Upload Foto Kwitansi (Kompres Otomatis di HP)')
                 ->image()
                 ->disk('public')
                 ->directory('kwitansi')
-                // ── Client-side Compression (HP) ─────────────
-                ->extraFilePondOptions([
-                    'imageResizeTargetWidth' => 1024,
-                    'imageResizeTargetHeight' => 1024,
-                    'imageResizeMode' => 'cover',
-                    'imageTransformOutputQuality' => 60, // Kompres ke 60% di sisi HP
-                    'imageTransformOutputMimeType' => 'image/jpeg',
-                ])
-                // ── Server-side Fallback & Editor ─────────────
-                ->imageResizeMode('cover')
-                ->imageResizeTargetWidth('1024')
-                ->imageResizeTargetHeight('1024')
-                ->imageEditor()
-                ->imageEditorAspectRatios([
-                    null,
-                    '16:9',
-                    '4:3',
-                    '1:1',
-                ])
-                ->maxSize(10240) // Izinkan file mentah 10MB karena akan dikompres di HP
+                ->extraAttributes(['class' => 'client-compress-input']) 
                 ->imagePreviewHeight('200')
                 ->nullable()
                 ->disabled($isPetugasMap)
+                ->visible(fn (Get $get) => ! $get('is_manual_url')),
+
+            Placeholder::make('compression_logic')
+                ->label('')
+                ->content(new HtmlString('
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/compressorjs/1.2.1/compressor.min.js"></script>
+                    <script>
+                        document.addEventListener("change", function (e) {
+                            const input = e.target;
+                            if (input.type === "file" && (input.classList.contains("client-compress-input") || input.closest(".client-compress-input"))) {
+                                const file = input.files[0];
+                                if (!file || !file.type.startsWith("image/") || file.compressed) return;
+
+                                new Compressor(file, {
+                                    quality: 0.6,
+                                    maxWidth: 1024,
+                                    maxHeight: 1024,
+                                    success(result) {
+                                        const compressedFile = new File([result], file.name, {
+                                            type: result.type,
+                                            lastModified: Date.now(),
+                                        });
+                                        compressedFile.compressed = true; // Flag to prevent infinite loop
+
+                                        const dataTransfer = new DataTransfer();
+                                        dataTransfer.items.add(compressedFile);
+                                        input.files = dataTransfer.files;
+                                        
+                                        // Dispatch change event to notify FilePond/Livewire
+                                        input.dispatchEvent(new Event("change", { bubbles: true }));
+                                    },
+                                    error(err) { console.error("Compression error:", err.message); },
+                                });
+                            }
+                        }, true);
+                    </script>
+                '))
                 ->visible(fn (Get $get) => ! $get('is_manual_url')),
 
             TextInput::make('kwitansi')
