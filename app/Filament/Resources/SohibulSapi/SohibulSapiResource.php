@@ -172,7 +172,11 @@ class SohibulSapiResource extends Resource
                 ->numeric()
                 ->prefix('Rp')
                 ->live()
-                ->disabled(fn (Get $get) => $isPetugasMap || ($get('jenis') !== 'PRIBADI' && $get('jenis') !== null && $get('jenis') !== ''))
+                ->disabled(function (Get $get) use ($isPetugasMap) {
+                    if ($isPetugasMap) return true;
+                    if ($get('posisidana') === 'Rek Program') return false;
+                    return ($get('jenis') !== 'PRIBADI' && $get('jenis') !== null && $get('jenis') !== '');
+                })
                 ->dehydrated()
                 ->helperText('Otomatis terisi sesuai jenis. Khusus PRIBADI diisi manual.'),
 
