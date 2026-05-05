@@ -26,6 +26,7 @@ RUN composer update --no-dev --optimize-autoloader --no-interaction --ignore-pla
 # Optimasi (config, route, view) akan dijalankan otomatis oleh image serversideup 
 # saat container pertama kali booting (entrypoint).
 # Hapus cache lama secara manual (lebih aman daripada artisan saat build)
+# Trigger force update
 RUN rm -rf storage/framework/views/*.php storage/framework/cache/data/*
 
 # PENTING: ServerSideUp menggunakan S6-Overlay yang membutuhkan akses ROOT 
