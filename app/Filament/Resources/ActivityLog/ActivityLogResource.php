@@ -91,7 +91,8 @@ class ActivityLogResource extends Resource
                             $out .= "<div style='margin-bottom: 8px; color: #2563eb; font-weight: bold; font-size: 13px;'>Data Baru: {$noSohibul} ({$nama})</div>";
                             
                             foreach ($new as $key => $val) {
-                                if (in_array($key, ['updated_at', 'created_at', 'id'])) continue;
+                                // Lewati field yang sudah ada di header atau yang tidak penting
+                                if (in_array($key, ['updated_at', 'created_at', 'id', 'no_sohibul', 'nama'])) continue;
                                 if (is_array($val)) $val = json_encode($val);
                                 $out .= "<div><span style='font-weight: bold;'>{$key}</span>: " . e($val) . "</div>";
                             }
