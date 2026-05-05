@@ -57,25 +57,27 @@ class ActivityLogResource extends Resource
                 TextColumn::make('properties')
                     ->label('Perubahan')
                     ->html()
-                    ->formatStateUsing(function ($state) {
+                    ->formatStateUsing(function ($state, Activity $record) {
                         if (!$state) return '-';
                         
+                        $description = $record->description;
                         $old = $state['old'] ?? [];
                         $new = $state['attributes'] ?? [];
                         
                         if (empty($old) && empty($new)) return '-';
 
-                        $out = '<div class="text-[10px] leading-tight">';
+                        $out = '<div style="font-size: 11px; line-height: 1.2;">';
                         
                         // Jika created
-                        if (empty($old) && !empty($new)) {
-                            $noSohibul = $new['no_sohibul'] ?? '-';
-                            $nama = $new['nama'] ?? '-';
-                            $out .= "<div class='mb-2 text-blue-600 font-bold'>Data Baru: {$noSohibul} ({$nama})</div>";
+                        if ($description === 'created') {
+                            $data = !empty($new) ? $new : $state;
+                            $noSohibul = $data['no_sohibul'] ?? '-';
+                            $nama = $data['nama'] ?? '-';
+                            $out .= "<div style='margin-bottom: 8px; color: #2563eb; font-weight: bold; font-size: 13px;'>Data Baru: {$noSohibul} ({$nama})</div>";
                             
-                            foreach ($new as $key => $val) {
+                            foreach ($data as $key => $val) {
                                 if (in_array($key, ['updated_at', 'created_at', 'id'])) continue;
-                                $out .= "<div><span class='font-bold'>{$key}</span>: " . e($val) . "</div>";
+                                $out .= "<div><span style='font-weight: bold;'>{$key}</span>: " . e($val) . "</div>";
                             }
                         } else {
                             // Jika updated
@@ -84,9 +86,9 @@ class ActivityLogResource extends Resource
                                 $oldVal = $old[$key] ?? '—';
                                 if ($oldVal == $val) continue;
                                 
-                                $out .= "<div class='mb-1'><strong>{$key}</strong>: <br>"
-                                      . "<span class='text-red-500 line-through'>" . e($oldVal) . "</span> &rarr; "
-                                      . "<span class='text-green-600 font-medium'>" . e($val) . "</span></div>";
+                                $out .= "<div style='margin-bottom: 4px;'><strong>{$key}</strong>: <br>"
+                                      . "<span style='color: #ef4444; text-decoration: line-through;'>" . e($oldVal) . "</span> &rarr; "
+                                      . "<span style='color: #16a34a; font-weight: 500;'>" . e($val) . "</span></div>";
                             }
                         }
                         
