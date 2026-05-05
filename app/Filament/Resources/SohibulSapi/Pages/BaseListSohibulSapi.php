@@ -226,7 +226,7 @@ abstract class BaseListSohibulSapi extends ListRecords
                     ->tooltip('Edit')
                     ->hidden(fn (SohibulSapi $record): bool =>
                         (auth()->user()?->hasRole('adminsohibul') && $record->posisidana === 'Kas') ||
-                        (auth()->user()?->hasRole('petugasmap') && $record->bagiansohibul === 'tidak_diambil')
+                        (auth()->user()?->hasRole('petugasmap') && in_array($record->bagiansohibul, ['tidak_diambil', 'diambil_sendiri']))
                     ),
                 DeleteAction::make()
                     ->label('')
