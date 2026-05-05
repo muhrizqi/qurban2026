@@ -20,8 +20,8 @@ RUN chown -R 999:999 /var/www/html
 # Kembali ke user webserver (www-data / 999 di serversideup)
 USER 999
 
-# Instal dependensi composer (tanpa dev) - Paksa update untuk resolusi paket segar di server
-RUN composer update --no-dev --optimize-autoloader --no-interaction --ignore-platform-reqs
+# Instal dependensi composer (tanpa dev)
+RUN composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-reqs
 
 # Optimasi (config, route, view) akan dijalankan otomatis oleh image serversideup 
 # saat container pertama kali booting (entrypoint).
