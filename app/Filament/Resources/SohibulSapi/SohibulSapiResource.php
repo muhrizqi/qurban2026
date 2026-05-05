@@ -36,6 +36,11 @@ class SohibulSapiResource extends Resource
     protected static BackedEnum|string|null $navigationIcon = 'heroicon-o-users';
     protected static UnitEnum|string|null $navigationGroup = 'Sohibul Sapi';
 
+    public static function canViewAny(): bool
+    {
+        return auth()->user()?->hasAnyRole(['admin', 'adminsohibul', 'bendaharasapi', 'petugasmap']);
+    }
+
     public static function shouldRegisterNavigation(): bool
     {
         return false; // navigasi dikelola oleh masing-masing custom page
