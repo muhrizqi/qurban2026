@@ -75,7 +75,7 @@ class AdminPanelProvider extends PanelProvider
             ['key' => 'luar',    'label' => 'JAMAAH LUAR', 'sort' => 9, 'roles' => ['admin', 'adminsohibul', 'bendaharasapi', 'petugasmap']],
             ['key' => 'kas',     'label' => 'KAS',         'sort' => 10, 'roles' => ['admin', 'adminsohibul', 'bendaharasapi']],
             ['key' => 'rek_program', 'label' => 'REK. PROGRAM', 'sort' => 11, 'roles' => ['admin', 'adminsohibul', 'bendaharasapi']],
-            ['key' => 'rek_qurban',  'label' => 'REK. BENDAHARA',  'sort' => 12, 'roles' => ['admin', 'adminsohibul', 'bendaharasapi']],
+            ['key' => 'rek_qurban',  'label' => 'REK. QURBAN',  'sort' => 12, 'roles' => ['admin', 'adminsohibul', 'bendaharasapi']],
         ];
 
         $distribusiMenus = [
