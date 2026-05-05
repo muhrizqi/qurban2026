@@ -203,6 +203,26 @@ class SohibulSapiResource extends Resource
                 ->image()
                 ->disk('public')
                 ->directory('kwitansi')
+                // ── Client-side Compression (HP) ─────────────
+                ->extraFilePondOptions([
+                    'imageResizeTargetWidth' => 1024,
+                    'imageResizeTargetHeight' => 1024,
+                    'imageResizeMode' => 'cover',
+                    'imageTransformOutputQuality' => 60, // Kompres ke 60% di sisi HP
+                    'imageTransformOutputMimeType' => 'image/jpeg',
+                ])
+                // ── Server-side Fallback & Editor ─────────────
+                ->imageResizeMode('cover')
+                ->imageResizeTargetWidth('1024')
+                ->imageResizeTargetHeight('1024')
+                ->imageEditor()
+                ->imageEditorAspectRatios([
+                    null,
+                    '16:9',
+                    '4:3',
+                    '1:1',
+                ])
+                ->maxSize(10240) // Izinkan file mentah 10MB karena akan dikompres di HP
                 ->imagePreviewHeight('200')
                 ->nullable()
                 ->disabled($isPetugasMap)
