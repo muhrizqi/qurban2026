@@ -203,7 +203,8 @@ class SohibulSapiResource extends Resource
                 ->image()
                 ->disk('public')
                 ->directory('kwitansi')
-                ->extraAttributes(['class' => 'client-compress-input']) 
+                ->extraAttributes(['class' => 'client-compress-input'])
+                ->extraInputAttributes(['capture' => 'environment']) // Langsung buka kamera HP
                 ->imagePreviewHeight('200')
                 ->nullable()
                 ->disabled($isPetugasMap)
