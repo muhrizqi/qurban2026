@@ -360,7 +360,6 @@ class SohibulSapiResource extends Resource
             'kas'     => Pages\ListSohibulSapiKas::route('/kas'),
             'rek_program'    => Pages\ListSohibulSapiRekProgram::route('/rek-program'),
             'rek_qurban'     => Pages\ListSohibulSapiRekQurban::route('/rek-qurban'),
-            'tidak_diambil'  => Pages\ListSohibulSapiTidakDiambil::route('/tidak-diambil'),
             // Wildcard routes — HARUS di akhir
             'view'    => Pages\ViewSohibulSapi::route('/{record}'),
             'edit'    => Pages\EditSohibulSapi::route('/{record}/edit'),

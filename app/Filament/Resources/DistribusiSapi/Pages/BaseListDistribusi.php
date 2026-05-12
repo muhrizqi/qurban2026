@@ -19,9 +19,10 @@ abstract class BaseListDistribusi extends ListRecords
 {
     protected static string $resource = DistribusiSapiResource::class;
 
-    protected ?string $filterJenis = null;
-    protected ?string $filterRw    = null;
-    protected bool    $filterLuar  = false;
+    protected ?string $filterJenis  = null;
+    protected ?string $filterRw     = null;
+    protected ?string $filterBagian = null;
+    protected bool    $filterLuar   = false;
 
     public static function shouldRegisterNavigation(array $parameters = []): bool
     {
@@ -40,33 +41,37 @@ abstract class BaseListDistribusi extends ListRecords
     public function getWidgetData(): array
     {
         return [
-            'filterJenis' => $this->filterJenis,
-            'filterRw'    => $this->filterRw,
-            'filterLuar'  => $this->filterLuar,
+            'filterJenis'  => $this->filterJenis,
+            'filterRw'     => $this->filterRw,
+            'filterBagian' => $this->filterBagian,
+            'filterLuar'   => $this->filterLuar,
         ];
     }
 
     public function table(Table $table): Table
     {
-        $filterJenis = $this->filterJenis;
-        $filterRw    = $this->filterRw;
-        $filterLuar  = $this->filterLuar;
+        $filterJenis  = $this->filterJenis;
+        $filterRw     = $this->filterRw;
+        $filterBagian = $this->filterBagian;
+        $filterLuar   = $this->filterLuar;
 
         $count = SohibulSapi::query()
-            ->when($filterJenis, fn ($q) => $q->where('jenis', $filterJenis))
-            ->when($filterRw,    fn ($q) => $q->where('rw', $filterRw))
-            ->when($filterLuar,  fn ($q) => $q->where('rt', 'non_warga'))
+            ->when($filterJenis,  fn ($q) => $q->where('jenis', $filterJenis))
+            ->when($filterRw,     fn ($q) => $q->where('rw', $filterRw))
+            ->when($filterBagian, fn ($q) => $q->where('bagiansohibul', $filterBagian))
+            ->when($filterLuar,   fn ($q) => $q->where('rt', 'non_warga'))
             ->count();
 
         return $table
             ->description("Total: {$count} sohibul")
-            ->modifyQueryUsing(function (Builder $query) use ($filterJenis, $filterRw, $filterLuar) {
+            ->modifyQueryUsing(function (Builder $query) use ($filterJenis, $filterRw, $filterBagian, $filterLuar) {
                 $isAdmin = auth()->user()?->hasRole('adminsapi');
 
                 $query
-                    ->when($filterJenis, fn ($q) => $q->where('jenis', $filterJenis))
-                    ->when($filterRw,    fn ($q) => $q->where('rw', $filterRw))
-                    ->when($filterLuar,  fn ($q) => $q->where('rt', 'non_warga'));
+                    ->when($filterJenis,  fn ($q) => $q->where('jenis', $filterJenis))
+                    ->when($filterRw,     fn ($q) => $q->where('rw', $filterRw))
+                    ->when($filterBagian, fn ($q) => $q->where('bagiansohibul', $filterBagian))
+                    ->when($filterLuar,   fn ($q) => $q->where('rt', 'non_warga'));
 
                 // Urutkan: yang bisa dipilih dulu, yang tidak bisa di bawah
                 if ($isAdmin) {
@@ -88,18 +93,25 @@ abstract class BaseListDistribusi extends ListRecords
             ->columns([
                 TextColumn::make('no_sohibul')->label('No.')->sortable()->searchable(),
                 TextColumn::make('nama')->label('Nama')->sortable()->searchable(),
+                TextColumn::make('jenis')
+                    ->label('Jenis')
+                    ->badge()
+                    ->hidden(fn () => auth()->user()?->hasAnyRole(['distribusisapi', 'adminsapi', 'petugasmap'])),
                 TextColumn::make('alamat')
                     ->label('Alamat & Maps')
                     ->html()
                     ->formatStateUsing(function ($state, SohibulSapi $record): string {
-                        $jenisLabel  = $record->jenis ?? '-';
-                        $bagianLabel = SohibulSapi::BAGIAN_OPTIONS[$record->bagiansohibul] ?? ($record->bagiansohibul ?? '-');
-
+                        $isMobileRole = auth()->user()?->hasAnyRole(['distribusisapi', 'adminsapi', 'petugasmap']);
+                        
                         $out = 'RT ' . e($record->rt) . ' / RW ' . e($record->rw ?? '-') . '<br>' . e($state);
 
-                        // Jenis & Bagian
-                        $out .= '<br><small style="color:#6366f1;font-weight:600">🐄 ' . e($jenisLabel)
-                              . ' &nbsp;|&nbsp; 📦 ' . e($bagianLabel) . '</small>';
+                        // Jenis & Bagian dimasukkan jika role mobile
+                        if ($isMobileRole) {
+                            $jenisLabel  = $record->jenis ?? '-';
+                            $bagianLabel = SohibulSapi::BAGIAN_OPTIONS[$record->bagiansohibul] ?? ($record->bagiansohibul ?? '-');
+                            $out .= '<br><small style="color:#6366f1;font-weight:600">🐄 ' . e($jenisLabel)
+                                  . ' &nbsp;|&nbsp; 📦 ' . e($bagianLabel) . '</small>';
+                        }
 
                         if ($record->nohp) {
                             $out .= '<br><small>📱 ' . e($record->nohp) . '</small>';
@@ -110,20 +122,31 @@ abstract class BaseListDistribusi extends ListRecords
                         return $out;
                     })
                     ->wrap(),
+                TextColumn::make('bagiansohibul')
+                    ->label('Bagian')
+                    ->badge()
+                    ->formatStateUsing(fn ($state) => SohibulSapi::BAGIAN_OPTIONS[$state] ?? $state)
+                    ->hidden(fn () => auth()->user()?->hasAnyRole(['distribusisapi', 'adminsapi', 'petugasmap'])),
                 TextColumn::make('status')
-                    ->label('Status / PJ')
+                    ->label(fn () => auth()->user()?->hasAnyRole(['distribusisapi', 'adminsapi', 'petugasmap']) ? 'Status / PJ' : 'Status')
                     ->badge()
                     ->html()
                     ->formatStateUsing(function ($state, SohibulSapi $record): string {
+                        $isMobileRole = auth()->user()?->hasAnyRole(['distribusisapi', 'adminsapi', 'petugasmap']);
                         $statusLabel = SohibulSapi::STATUS_LABEL[$state] ?? '-';
                         $out = e($statusLabel);
-                        // Tampilkan nama PJ di bawah status
-                        if ($record->penanggungJawab) {
+                        
+                        // Tampilkan nama PJ di bawah status jika role mobile
+                        if ($isMobileRole && $record->penanggungJawab) {
                             $out .= '<br><small style="font-weight:600;color:#374151">👤 ' . e($record->penanggungJawab->name) . '</small>';
                         }
                         return $out;
                     })
                     ->color(fn ($state) => SohibulSapi::STATUS_COLOR[$state] ?? 'gray'),
+                TextColumn::make('penanggungJawab.name')
+                    ->label('PJ')
+                    ->default('-')
+                    ->hidden(fn () => auth()->user()?->hasAnyRole(['distribusisapi', 'adminsapi', 'petugasmap'])),
             ])
 
             ->defaultSort('no_sohibul')

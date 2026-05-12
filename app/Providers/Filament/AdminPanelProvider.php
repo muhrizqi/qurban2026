@@ -89,6 +89,7 @@ class AdminPanelProvider extends PanelProvider
             ['key' => 'rw11',    'label' => 'RW 11',   'sort' => 8],
             ['key' => 'rw12',    'label' => 'RW 12',   'sort' => 9],
             ['key' => 'luar',    'label' => 'JAMAAH LUAR', 'sort' => 10],
+            ['key' => 'tidak_diambil', 'label' => '🚫 TIDAK DIAMBIL', 'sort' => 11, 'roles' => ['admin', 'adminsohibul', 'bendaharasapi', 'petugasmap', 'distribusisapi', 'adminsapi']],
         ];
 
         $items = [];
@@ -112,7 +113,7 @@ class AdminPanelProvider extends PanelProvider
                 ->icon($menu['key'] === 'tugas' ? 'heroicon-o-clipboard-document-list' : 'heroicon-o-list-bullet')
                 ->url(fn () => DistribusiSapiResource::getUrl($menu['key']))
                 ->isActiveWhen(fn () => request()->url() === DistribusiSapiResource::getUrl($menu['key']))
-                ->visible(fn () => auth()->user()?->hasAnyRole(['adminsapi', 'distribusisapi']));
+                ->visible(fn () => auth()->user()?->hasAnyRole($menu['roles'] ?? ['adminsapi', 'distribusisapi']));
         }
 
         // ── Peta Sohibul — navigasi manual agar muncul di grup Distribusi Sapi ─

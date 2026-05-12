@@ -48,7 +48,6 @@ abstract class BaseListSohibulSapi extends ListRecords
                 'ListSohibulSapiRW11',
                 'ListSohibulSapiRW12',
                 'ListSohibulSapiLuar',
-                'ListSohibulSapiTidakDiambil',
             ];
             $className = class_basename(static::class);
             return in_array($className, $allowedPages);
