@@ -68,14 +68,15 @@ class AdminPanelProvider extends PanelProvider
             ['key' => 'super',   'label' => 'SUPER',   'sort' => 2],
             ['key' => 'duper',   'label' => 'DUPER',   'sort' => 3],
             ['key' => 'pribadi', 'label' => 'PRIBADI', 'sort' => 4],
-            ['key' => 'rw9',     'label' => 'RW 9',    'sort' => 5, 'roles' => ['admin', 'adminsohibul', 'bendaharasapi', 'petugasmap']],
-            ['key' => 'rw10',    'label' => 'RW 10',   'sort' => 6, 'roles' => ['admin', 'adminsohibul', 'bendaharasapi', 'petugasmap']],
-            ['key' => 'rw11',    'label' => 'RW 11',   'sort' => 7, 'roles' => ['admin', 'adminsohibul', 'bendaharasapi', 'petugasmap']],
-            ['key' => 'rw12',    'label' => 'RW 12',   'sort' => 8, 'roles' => ['admin', 'adminsohibul', 'bendaharasapi', 'petugasmap']],
-            ['key' => 'luar',    'label' => 'JAMAAH LUAR', 'sort' => 9, 'roles' => ['admin', 'adminsohibul', 'bendaharasapi', 'petugasmap']],
-            ['key' => 'kas',     'label' => 'KAS',         'sort' => 10, 'roles' => ['admin', 'adminsohibul', 'bendaharasapi']],
-            ['key' => 'rek_program', 'label' => 'REK. PROGRAM', 'sort' => 11, 'roles' => ['admin', 'adminsohibul', 'bendaharasapi']],
-            ['key' => 'rek_qurban',  'label' => 'REK. QURBAN',  'sort' => 12, 'roles' => ['admin', 'adminsohibul', 'bendaharasapi']],
+            ['key' => 'rw9',     'label' => 'RW 9',    'sort' => 5, 'roles' => ['admin', 'adminsohibul', 'bendaharasapi', 'petugasmap', 'distribusisapi', 'adminsapi']],
+            ['key' => 'rw10',    'label' => 'RW 10',   'sort' => 6, 'roles' => ['admin', 'adminsohibul', 'bendaharasapi', 'petugasmap', 'distribusisapi', 'adminsapi']],
+            ['key' => 'rw11',    'label' => 'RW 11',   'sort' => 7, 'roles' => ['admin', 'adminsohibul', 'bendaharasapi', 'petugasmap', 'distribusisapi', 'adminsapi']],
+            ['key' => 'rw12',    'label' => 'RW 12',   'sort' => 8, 'roles' => ['admin', 'adminsohibul', 'bendaharasapi', 'petugasmap', 'distribusisapi', 'adminsapi']],
+            ['key' => 'luar',    'label' => 'JAMAAH LUAR', 'sort' => 9, 'roles' => ['admin', 'adminsohibul', 'bendaharasapi', 'petugasmap', 'distribusisapi', 'adminsapi']],
+            ['key' => 'tidak_diambil', 'label' => '🚫 TIDAK DIAMBIL', 'sort' => 10, 'roles' => ['admin', 'adminsohibul', 'bendaharasapi', 'petugasmap', 'distribusisapi', 'adminsapi']],
+            ['key' => 'kas',     'label' => 'KAS',         'sort' => 11, 'roles' => ['admin', 'adminsohibul', 'bendaharasapi']],
+            ['key' => 'rek_program', 'label' => 'REK. PROGRAM', 'sort' => 12, 'roles' => ['admin', 'adminsohibul', 'bendaharasapi']],
+            ['key' => 'rek_qurban',  'label' => 'REK. QURBAN',  'sort' => 13, 'roles' => ['admin', 'adminsohibul', 'bendaharasapi']],
         ];
 
         $distribusiMenus = [
