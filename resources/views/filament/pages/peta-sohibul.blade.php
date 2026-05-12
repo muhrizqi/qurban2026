@@ -76,7 +76,7 @@
 </div>
 
 {{-- ── Map Container ───────────────────────────────────────────────── --}}
-<div class="relative rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-lg" style="height:600px;">
+<div wire:ignore class="relative rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-lg" style="height:600px;">
 
     {{-- Marker Count Badge --}}
     <div id="marker-count-badge"
@@ -290,6 +290,14 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ── Popup HTML factory ────────────────────────────────────────
+    const isPetugas = {{ auth()->user()?->hasAnyRole(['adminsapi', 'distribusisapi']) ? 'true' : 'false' }};
+
+    window.confirmAntarkan = function(id, nama) {
+        if (confirm(`Apakah Anda yakin mau mengantarkan daging untuk sohibul ${nama}?`)) {
+            @this.call('antarkanSohibul', id);
+        }
+    };
+
     function makePopup(d) {
         const s    = STATUS[d.status] ?? STATUS[0];
         const nohpRaw = d.nohp ? d.nohp.toString().replace(/\D/g, '').replace(/^0/, '') : '';
@@ -297,6 +305,10 @@ document.addEventListener('DOMContentLoaded', function () {
             ? `<a href="https://wa.me/62${nohpRaw}" target="_blank" class="popup-link" style="color:#25D366">📱 WA: ${d.nohp}</a>`
             : '';
         const mapsLink = `<a href="${d.urlmap}" target="_blank" class="popup-link" style="color:#2563eb">📍 Google Maps</a>`;
+
+        const antarkanBtn = (isPetugas && d.status === 0) 
+            ? `<button onclick="confirmAntarkan(${d.id}, '${d.nama.replace(/'/g, "\\'")}')" style="background:#22c55e; color:#fff; padding:6px 12px; border-radius:6px; border:none; cursor:pointer; font-size:12px; font-weight:bold; width:100%; margin-top:10px; display:flex; justify-content:center; align-items:center; gap:6px;">🚚 Antarkan Daging</button>`
+            : '';
 
         return `<div class="popup-inner">
             <div class="popup-header">
@@ -324,6 +336,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 ${waLink}
                 ${mapsLink}
             </div>
+            ${antarkanBtn}
         </div>`;
     }
 
@@ -372,6 +385,29 @@ document.addEventListener('DOMContentLoaded', function () {
         const badge   = document.getElementById('marker-count-badge');
         if (badge) badge.textContent = `📍 ${visible} dari ${allMarkers.length} sohibul ditampilkan`;
     }
+
+    // ── Listen to Livewire Event for Marker Update ────────────────
+    window.addEventListener('marker-updated', (event) => {
+        const detail = event.detail[0] || event.detail; // Handle different Livewire versions
+        const id = detail.id;
+        const newStatus = detail.status;
+        
+        const item = allMarkers.find(m => m.data.id === id);
+        if (item) {
+            item.data.status = newStatus;
+            item.data.statusLabel = STATUS[newStatus].label;
+            
+            // Update the map marker icon
+            item.marker.setIcon(makeIcon(newStatus));
+            // Update the popup content
+            item.marker.setPopupContent(makePopup(item.data));
+            
+            // Reapply filter so if we are viewing "Belum Diproses", it disappears
+            if (activeFilter !== 'all') {
+                filterMarkers(activeFilter);
+            }
+        }
+    });
 
 }); // end DOMContentLoaded
 </script>

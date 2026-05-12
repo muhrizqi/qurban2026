@@ -29,10 +29,49 @@ class UserResource extends Resource
     protected static UnitEnum|string|null $navigationGroup = 'Menu Admin';
     protected static ?string $recordTitleAttribute = 'name';
 
-    // hanya admin yang bisa lihat menu Users
     public static function shouldRegisterNavigation(array $parameters = []): bool
     {
-        return auth()->user()?->hasRole('admin');
+        return auth()->user()?->hasAnyRole(['admin', 'adminsapi']);
+    }
+
+    public static function canViewAny(): bool
+    {
+        return auth()->user()?->hasAnyRole(['admin', 'adminsapi']);
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->user()?->hasAnyRole(['admin', 'adminsapi']);
+    }
+
+    public static function canEdit(\Illuminate\Database\Eloquent\Model $record): bool
+    {
+        if (auth()->user()?->hasRole('admin')) {
+            return true;
+        }
+        if (auth()->user()?->hasRole('adminsapi')) {
+            return $record->hasAnyRole(['adminsapi', 'distribusisapi']);
+        }
+        return false;
+    }
+
+    public static function canDelete(\Illuminate\Database\Eloquent\Model $record): bool
+    {
+        return static::canEdit($record);
+    }
+
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        $query = parent::getEloquentQuery();
+        
+        $user = auth()->user();
+        if ($user && $user->hasRole('adminsapi') && !$user->hasRole('admin')) {
+            $query->whereHas('roles', function ($q) {
+                $q->whereIn('name', ['adminsapi', 'distribusisapi']);
+            });
+        }
+        
+        return $query;
     }
 
     public static function form(Schema $schema): Schema
@@ -47,7 +86,12 @@ class UserResource extends Resource
                 ->required(fn ($record) => $record === null),
             Select::make('roles')
                 ->multiple()
-                ->relationship('roles', 'name')
+                ->relationship('roles', 'name', function (\Illuminate\Database\Eloquent\Builder $query) {
+                    $user = auth()->user();
+                    if ($user && $user->hasRole('adminsapi') && !$user->hasRole('admin')) {
+                        $query->whereIn('name', ['adminsapi', 'distribusisapi']);
+                    }
+                })
                 ->preload()
                 ->label('Roles'),
         ]);

@@ -97,4 +97,29 @@ class PetaSohibulPage extends Page
             'selesai' => $all->where('status', 2)->count(),
         ];
     }
+
+    public function antarkanSohibul($id)
+    {
+        $user = auth()->user();
+        if (! $user?->hasAnyRole(['adminsapi', 'distribusisapi'])) {
+            return;
+        }
+
+        $sohibul = SohibulSapi::find($id);
+        if ($sohibul && $sohibul->status === 0) {
+            $sohibul->update([
+                'pj' => $user->id,
+                'status' => 1,
+            ]);
+            
+            \Filament\Notifications\Notification::make()
+                ->success()
+                ->title('Tugas Berhasil Diambil!')
+                ->body('Anda ditugaskan mengantarkan daging untuk ' . $sohibul->nama)
+                ->send();
+
+            // Trigger event to frontend to update marker without reloading map
+            $this->dispatch('marker-updated', id: $id, status: 1);
+        }
+    }
 }
