@@ -34,13 +34,14 @@ abstract class BaseListSohibulSapi extends ListRecords
     protected bool    $filterLuar   = false;
     protected string  $jenisLabel   = 'Sohibul';
 
+
     public static function shouldRegisterNavigation(array $parameters = []): bool
     {
         $user = auth()->user();
         if (!$user) return false;
 
-        if ($user->hasRole('petugasmap')) {
-            // Petugas Map hanya bisa melihat menu RW, Jamaah Luar, dan Tidak Diambil
+        // role yang hanya bisa melihat RW9-12, Jamaah Luar, dan Tidak Diambil
+        if ($user->hasAnyRole(['petugasmap', 'distribusisapi', 'adminsapi'])) {
             $allowedPages = [
                 'ListSohibulSapiRW9',
                 'ListSohibulSapiRW10',
@@ -51,11 +52,6 @@ abstract class BaseListSohibulSapi extends ListRecords
             ];
             $className = class_basename(static::class);
             return in_array($className, $allowedPages);
-        }
-
-        if ($user->hasAnyRole(['distribusisapi', 'adminsapi'])) {
-            // distribusisapi dan adminsapi hanya bisa melihat menu Tidak Diambil
-            return static::class === ListSohibulSapiTidakDiambil::class;
         }
 
         return $user->hasAnyRole(['admin', 'adminsohibul', 'bendaharasapi']);
