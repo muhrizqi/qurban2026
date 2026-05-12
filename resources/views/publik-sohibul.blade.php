@@ -135,11 +135,7 @@
         @endphp
 
         @foreach($jenisList as $jenis)
-            @php
-                $items = \App\Models\SohibulSapi::where('jenis', $jenis)->get()->sortBy(function($item) {
-                    return (int) preg_replace('/[^0-9]/', '', $item->no_sohibul);
-                });
-            @endphp
+            @php $items = $grouped->get($jenis, collect()); @endphp
 
             @if($items->count() > 0)
                 <div class="category-section">
@@ -166,6 +162,7 @@
                 </div>
             @endif
         @endforeach
+
 
         <div class="footer">
             &copy; {{ date('Y') }} Masjid Jogokariyan Yogyakarta<br>

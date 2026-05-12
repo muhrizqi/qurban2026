@@ -40,6 +40,17 @@ USER root
 ENV PUID=999
 ENV PGID=999
 
+# Tuning PHP-FPM agar tidak mudah kehabisan worker
+ENV PHP_FPM_PM=dynamic
+ENV PHP_FPM_PM_MAX_CHILDREN=20
+ENV PHP_FPM_PM_START_SERVERS=4
+ENV PHP_FPM_PM_MIN_SPARE_SERVERS=2
+ENV PHP_FPM_PM_MAX_SPARE_SERVERS=8
+
+# Copy custom NGINX config: healthcheck dijawab langsung oleh NGINX (bypass PHP-FPM)
+COPY docker/nginx/healthcheck.conf /etc/nginx/conf.d/healthcheck.conf
+
+
 # Buat struktur folder storage dasar karena Volume Mount Easypanel akan 
 # menimpa folder storage bawaan Laravel menjadi kosong melompong.
 RUN mkdir -p /etc/entrypoint.d/ && \

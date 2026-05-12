@@ -25,5 +25,14 @@ Route::get('/sohibul/{sohibul}/kuitansi-pdf', function (SohibulSapi $sohibul) {
 })->name('sohibul.kuitansi.pdf')->middleware(['auth']);
 
 Route::get('/publik/sohibul', function () {
-    return view('publik-sohibul');
+    $jenisList = ['REGULER', 'SUPER', 'DUPER', 'PRIBADI'];
+
+    // 1 query saja, dikelompokkan di PHP — jauh lebih efisien
+    $grouped = \App\Models\SohibulSapi::whereIn('jenis', $jenisList)
+        ->select('no_sohibul', 'nama', 'jenis')
+        ->get()
+        ->groupBy('jenis')
+        ->map(fn ($items) => $items->sortBy(fn ($i) => (int) preg_replace('/[^0-9]/', '', $i->no_sohibul)));
+
+    return view('publik-sohibul', compact('grouped', 'jenisList'));
 })->name('sohibul.publik');
