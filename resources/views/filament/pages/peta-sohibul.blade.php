@@ -409,6 +409,63 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    // ── GPS Tracking for Petugas ──────────────────────────────────
+    if (isPetugas && 'geolocation' in navigator) {
+        let userMarker = null;
+        let userCircle = null;
+
+        // Custom icon for user location (pulsing blue dot)
+        const userIcon = L.divIcon({
+            className: 'user-gps-marker',
+            html: `<div style="width:16px;height:16px;background:#3b82f6;border-radius:50%;border:3px solid #fff;box-shadow:0 0 10px rgba(59,130,246,0.8);animation: gpsPulse 1.5s infinite;"></div>`,
+            iconSize: [16, 16],
+            iconAnchor: [8, 8]
+        });
+
+        // Add CSS keyframes for pulse effect
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes gpsPulse {
+                0% { box-shadow: 0 0 0 0 rgba(59,130,246, 0.7); }
+                70% { box-shadow: 0 0 0 15px rgba(59,130,246, 0); }
+                100% { box-shadow: 0 0 0 0 rgba(59,130,246, 0); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        navigator.geolocation.watchPosition(
+            (position) => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                const accuracy = position.coords.accuracy;
+
+                if (!userMarker) {
+                    userMarker = L.marker([lat, lng], { icon: userIcon, zIndexOffset: 1000 }).addTo(map)
+                        .bindPopup("<b>📍 Posisi Anda</b>", { autoClose: false });
+                    userCircle = L.circle([lat, lng], {
+                        radius: accuracy,
+                        color: '#3b82f6',
+                        fillColor: '#3b82f6',
+                        fillOpacity: 0.15,
+                        weight: 1
+                    }).addTo(map);
+                } else {
+                    userMarker.setLatLng([lat, lng]);
+                    userCircle.setLatLng([lat, lng]);
+                    userCircle.setRadius(accuracy);
+                }
+            },
+            (error) => {
+                console.warn('Gagal mendapatkan lokasi GPS: ', error.message);
+            },
+            {
+                enableHighAccuracy: true,
+                maximumAge: 10000,
+                timeout: 10000
+            }
+        );
+    }
+
 }); // end DOMContentLoaded
 </script>
 @endif
