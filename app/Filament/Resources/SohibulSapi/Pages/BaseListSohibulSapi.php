@@ -161,6 +161,31 @@ abstract class BaseListSohibulSapi extends ListRecords
             ->columns([
                 TextColumn::make('no_sohibul')
                     ->label('No. Sohibul')
+                    ->html()
+                    ->formatStateUsing(function ($state, SohibulSapi $record): string {
+                        $isMobileRole = auth()->user()?->hasAnyRole(['distribusisapi', 'adminsapi', 'petugasmap']);
+                        $out = e($state);
+
+                        if ($isMobileRole) {
+                            $statusLabel = SohibulSapi::STATUS_LABEL[$record->status] ?? '-';
+                            $colorKey = SohibulSapi::STATUS_COLOR[$record->status] ?? 'gray';
+                            
+                            $textColor = match($colorKey) {
+                                'success' => '#16a34a', 'warning' => '#ca8a04', 'danger' => '#dc2626', 'primary' => '#2563eb', default => '#4b5563',
+                            };
+                            $bgColor = match($colorKey) {
+                                'success' => '#dcfce7', 'warning' => '#fef08a', 'danger' => '#fee2e2', 'primary' => '#dbeafe', default => '#f3f4f6',
+                            };
+                            
+                            $out .= '<br><span style="display:inline-block; margin-top:6px; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: 600; background-color: ' . $bgColor . '; color: ' . $textColor . ';">' . e($statusLabel) . '</span>';
+                            
+                            // Tampilkan PJ jika ada (sama seperti di Distribusi Sapi)
+                            if ($record->penanggungJawab) {
+                                $out .= '<br><small style="display:inline-block; margin-top:2px; font-weight:600; color:#374151; font-size:0.7rem">👤 ' . e($record->penanggungJawab->name) . '</small>';
+                            }
+                        }
+                        return $out;
+                    })
                     ->sortable()
                     ->searchable(),
 
@@ -218,7 +243,7 @@ abstract class BaseListSohibulSapi extends ListRecords
                     ->badge()
                     ->formatStateUsing(fn ($state) => SohibulSapi::STATUS_LABEL[$state] ?? '-')
                     ->color(fn ($state) => SohibulSapi::STATUS_COLOR[$state] ?? 'gray')
-                    ->hidden(fn () => auth()->user()?->hasAnyRole(['admin', 'adminsohibul', 'petugasmap'])),
+                    ->hidden(fn () => auth()->user()?->hasAnyRole(['admin', 'adminsohibul', 'petugasmap', 'distribusisapi', 'adminsapi'])),
             ])
             ->filters([])
             ->actions([

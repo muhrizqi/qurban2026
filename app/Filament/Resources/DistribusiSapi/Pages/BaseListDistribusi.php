@@ -91,7 +91,34 @@ abstract class BaseListDistribusi extends ListRecords
                 $query->orderBy('no_sohibul');
             })
             ->columns([
-                TextColumn::make('no_sohibul')->label('No.')->sortable()->searchable(),
+                TextColumn::make('no_sohibul')
+                    ->label('No.')
+                    ->html()
+                    ->formatStateUsing(function ($state, SohibulSapi $record): string {
+                        $isMobileRole = auth()->user()?->hasAnyRole(['distribusisapi', 'adminsapi', 'petugasmap']);
+                        $out = e($state);
+
+                        if ($isMobileRole) {
+                            $statusLabel = SohibulSapi::STATUS_LABEL[$record->status] ?? '-';
+                            $colorKey = SohibulSapi::STATUS_COLOR[$record->status] ?? 'gray';
+                            
+                            $textColor = match($colorKey) {
+                                'success' => '#16a34a', 'warning' => '#ca8a04', 'danger' => '#dc2626', 'primary' => '#2563eb', default => '#4b5563',
+                            };
+                            $bgColor = match($colorKey) {
+                                'success' => '#dcfce7', 'warning' => '#fef08a', 'danger' => '#fee2e2', 'primary' => '#dbeafe', default => '#f3f4f6',
+                            };
+                            
+                            $out .= '<br><span style="display:inline-block; margin-top:6px; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: 600; background-color: ' . $bgColor . '; color: ' . $textColor . ';">' . e($statusLabel) . '</span>';
+
+                            if ($record->penanggungJawab) {
+                                $out .= '<br><small style="display:inline-block; margin-top:2px; font-weight:600; color:#374151; font-size:0.7rem">👤 ' . e($record->penanggungJawab->name) . '</small>';
+                            }
+                        }
+                        return $out;
+                    })
+                    ->sortable()
+                    ->searchable(),
                 TextColumn::make('nama')
                     ->label('Nama')
                     ->sortable()
@@ -132,21 +159,11 @@ abstract class BaseListDistribusi extends ListRecords
                     ->formatStateUsing(fn ($state) => SohibulSapi::BAGIAN_OPTIONS[$state] ?? $state)
                     ->hidden(fn () => auth()->user()?->hasAnyRole(['distribusisapi', 'adminsapi', 'petugasmap'])),
                 TextColumn::make('status')
-                    ->label(fn () => auth()->user()?->hasAnyRole(['distribusisapi', 'adminsapi', 'petugasmap']) ? 'Status / PJ' : 'Status')
+                    ->label('Status')
                     ->badge()
-                    ->html()
-                    ->formatStateUsing(function ($state, SohibulSapi $record): string {
-                        $isMobileRole = auth()->user()?->hasAnyRole(['distribusisapi', 'adminsapi', 'petugasmap']);
-                        $statusLabel = SohibulSapi::STATUS_LABEL[$state] ?? '-';
-                        $out = e($statusLabel);
-                        
-                        // Tampilkan nama PJ di bawah status jika role mobile
-                        if ($isMobileRole && $record->penanggungJawab) {
-                            $out .= '<br><small style="font-weight:600;color:#374151">👤 ' . e($record->penanggungJawab->name) . '</small>';
-                        }
-                        return $out;
-                    })
-                    ->color(fn ($state) => SohibulSapi::STATUS_COLOR[$state] ?? 'gray'),
+                    ->formatStateUsing(fn ($state) => SohibulSapi::STATUS_LABEL[$state] ?? '-')
+                    ->color(fn ($state) => SohibulSapi::STATUS_COLOR[$state] ?? 'gray')
+                    ->hidden(fn () => auth()->user()?->hasAnyRole(['distribusisapi', 'adminsapi', 'petugasmap'])),
                 TextColumn::make('penanggungJawab.name')
                     ->label('PJ')
                     ->default('-')
