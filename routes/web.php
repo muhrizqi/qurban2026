@@ -4,6 +4,12 @@ use App\Models\SohibulSapi;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Route;
 
+// ── Healthcheck ringan (tidak menyentuh database) ────────────────────────────
+// Digunakan oleh serversideup PHP image untuk memverifikasi PHP-FPM hidup.
+Route::get('/healthcheck', function () {
+    return response('OK', 200)->header('Content-Type', 'text/plain');
+});
+
 Route::get('/', function () {
     return view('lewat');
 });
