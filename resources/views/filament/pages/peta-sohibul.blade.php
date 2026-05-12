@@ -133,9 +133,7 @@
     @endif
 </div>
 
-<p class="text-xs text-gray-400 dark:text-gray-500 mt-2">
-    Peta menggunakan <a href="https://leafletjs.com" target="_blank" class="underline">Leaflet.js</a>
-    dengan tile dari <a href="https://www.geoapify.com/" target="_blank" class="underline">Geoapify</a>.
+<p class="text-xs text-gray-400 dark:text-gray-500 mt-2 text-center sm:text-left">
     Hanya sohibul dengan URL Google Maps yang ditampilkan ({{ count($markers) }} dari {{ $stats['total'] }}).
 </p>
 
@@ -219,33 +217,7 @@
     text-decoration: none;
 }
 
-/* Layer switcher custom */
-.layer-control-panel {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    z-index: 1000;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-}
-.layer-btn {
-    display: block;
-    background: rgba(255,255,255,0.93);
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    padding: 6px 12px;
-    font-size: 11px;
-    font-weight: 600;
-    color: #374151;
-    cursor: pointer;
-    transition: all 0.15s;
-    white-space: nowrap;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-    text-align: left;
-}
-.layer-btn:hover { background: #f3f4f6; border-color: #6366f1; color: #6366f1; }
-.layer-btn.active-layer { background: #6366f1; color: #fff; border-color: #6366f1; }
+
 </style>
 
 {{-- ── Leaflet + Geoapify Script ───────────────────────────────────── --}}
@@ -266,35 +238,6 @@ document.addEventListener('DOMContentLoaded', function () {
         2: { color: '#22c55e', border: '#15803d', badgeBg: '#dcfce7', badgeText: '#15803d', label: 'Selesai' },
     };
 
-    // ── Tile layers (Geoapify) ────────────────────────────────────
-    const TILE_LAYERS = {
-        'roadmap': {
-            label : '🗺️ Peta',
-            url   : `https://maps.geoapify.com/v1/tile/osm-carto/{z}/{x}/{y}.png?apiKey=${GEOAPIFY_KEY}`,
-            attr  : '© <a href="https://www.geoapify.com/">Geoapify</a> © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-        },
-        'toner': {
-            label : '⬛ Toner',
-            url   : `https://maps.geoapify.com/v1/tile/toner/{z}/{x}/{y}.png?apiKey=${GEOAPIFY_KEY}`,
-            attr  : '© <a href="https://www.geoapify.com/">Geoapify</a> © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-        },
-        'satellite': {
-            label : '🛰️ Satelit',
-            url   : `https://maps.geoapify.com/v1/tile/satellite/{z}/{x}/{y}.jpg?apiKey=${GEOAPIFY_KEY}`,
-            attr  : '© <a href="https://www.geoapify.com/">Geoapify</a>',
-        },
-        'dark': {
-            label : '🌙 Dark',
-            url   : `https://maps.geoapify.com/v1/tile/dark-matter/{z}/{x}/{y}.png?apiKey=${GEOAPIFY_KEY}`,
-            attr  : '© <a href="https://www.geoapify.com/">Geoapify</a> © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-        },
-        'terrain': {
-            label : '⛰️ Terrain',
-            url   : `https://maps.geoapify.com/v1/tile/klokantech-terrain/{z}/{x}/{y}.png?apiKey=${GEOAPIFY_KEY}`,
-            attr  : '© <a href="https://www.geoapify.com/">Geoapify</a> © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-        },
-    };
-
     // ── Init Leaflet map ──────────────────────────────────────────
     // Default center: Jogokariyan, Yogyakarta
     const defaultCenter = RAW_MARKERS.length > 0
@@ -305,36 +248,15 @@ document.addEventListener('DOMContentLoaded', function () {
         center     : defaultCenter,
         zoom       : 14,
         zoomControl: true,
+        attributionControl: false // Sembunyikan tulisan Leaflet, geoapify, openstreet, dan bendera
     });
 
     // Pasang tile layer default
-    let activeLayerKey = 'roadmap';
-    let currentTile = L.tileLayer(TILE_LAYERS.roadmap.url, {
-        attribution : TILE_LAYERS.roadmap.attr,
-        maxZoom     : 20,
+    L.tileLayer(`https://maps.geoapify.com/v1/tile/osm-carto/{z}/{x}/{y}.png?apiKey=${GEOAPIFY_KEY}`, {
+        maxZoom: 20,
     }).addTo(map);
 
-    // ── Layer Switcher UI ─────────────────────────────────────────
-    const layerPanel = document.createElement('div');
-    layerPanel.className = 'layer-control-panel';
 
-    Object.entries(TILE_LAYERS).forEach(([key, cfg]) => {
-        const btn = document.createElement('button');
-        btn.className = 'layer-btn' + (key === activeLayerKey ? ' active-layer' : '');
-        btn.id        = 'layer-' + key;
-        btn.textContent = cfg.label;
-        btn.onclick = function () {
-            if (key === activeLayerKey) return;
-            map.removeLayer(currentTile);
-            currentTile = L.tileLayer(cfg.url, { attribution: cfg.attr, maxZoom: 20 }).addTo(map);
-            activeLayerKey = key;
-            document.querySelectorAll('.layer-btn').forEach(b => b.classList.remove('active-layer'));
-            btn.classList.add('active-layer');
-        };
-        layerPanel.appendChild(btn);
-    });
-
-    document.getElementById('sohibul-map').appendChild(layerPanel);
 
     // ── Drone Image Overlay (Orthomosaic Jogokariyan) ─────────────
     const droneUrl = '{{ asset("images/drone.jpg") }}';
