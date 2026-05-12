@@ -50,7 +50,7 @@ class UserResource extends Resource
             return true;
         }
         if (auth()->user()?->hasRole('adminsapi')) {
-            return $record->hasAnyRole(['adminsapi', 'distribusisapi']);
+            return $record->hasAnyRole(['adminsapi', 'distribusisapi', 'petugasmap']);
         }
         return false;
     }
@@ -67,7 +67,7 @@ class UserResource extends Resource
         $user = auth()->user();
         if ($user && $user->hasRole('adminsapi') && !$user->hasRole('admin')) {
             $query->whereHas('roles', function ($q) {
-                $q->whereIn('name', ['adminsapi', 'distribusisapi']);
+                $q->whereIn('name', ['adminsapi', 'distribusisapi', 'petugasmap']);
             });
         }
         
@@ -89,7 +89,7 @@ class UserResource extends Resource
                 ->relationship('roles', 'name', function (\Illuminate\Database\Eloquent\Builder $query) {
                     $user = auth()->user();
                     if ($user && $user->hasRole('adminsapi') && !$user->hasRole('admin')) {
-                        $query->whereIn('name', ['adminsapi', 'distribusisapi']);
+                        $query->whereIn('name', ['adminsapi', 'distribusisapi', 'petugasmap']);
                     }
                 })
                 ->preload()

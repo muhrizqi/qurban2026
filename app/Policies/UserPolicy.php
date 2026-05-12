@@ -24,7 +24,7 @@ class UserPolicy
             return true;
         }
         if ($user->hasRole('adminsapi')) {
-            return $model->hasAnyRole(['adminsapi', 'distribusisapi']);
+            return $model->hasAnyRole(['adminsapi', 'distribusisapi', 'petugasmap']);
         }
         return false;
     }
@@ -46,7 +46,7 @@ class UserPolicy
             return true;
         }
         if ($user->hasRole('adminsapi')) {
-            return $model->hasAnyRole(['adminsapi', 'distribusisapi']);
+            return $model->hasAnyRole(['adminsapi', 'distribusisapi', 'petugasmap']);
         }
         return false;
     }
@@ -60,7 +60,7 @@ class UserPolicy
             return true;
         }
         if ($user->hasRole('adminsapi')) {
-            return $model->hasAnyRole(['adminsapi', 'distribusisapi']);
+            return $model->hasAnyRole(['adminsapi', 'distribusisapi', 'petugasmap']);
         }
         return false;
     }
