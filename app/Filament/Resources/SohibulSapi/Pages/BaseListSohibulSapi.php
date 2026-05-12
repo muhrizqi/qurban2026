@@ -30,6 +30,7 @@ abstract class BaseListSohibulSapi extends ListRecords
     protected ?string $filterJenis  = null;
     protected ?string $filterRw     = null;
     protected ?string $filterPosisi = null;
+    protected ?string $filterBagian = null;
     protected bool    $filterLuar   = false;
     protected string  $jenisLabel   = 'Sohibul';
 
@@ -39,16 +40,22 @@ abstract class BaseListSohibulSapi extends ListRecords
         if (!$user) return false;
 
         if ($user->hasRole('petugasmap')) {
-            // Petugas Map hanya bisa melihat menu RW dan Jamaah Luar
+            // Petugas Map hanya bisa melihat menu RW, Jamaah Luar, dan Tidak Diambil
             $allowedPages = [
                 'ListSohibulSapiRW9',
                 'ListSohibulSapiRW10',
                 'ListSohibulSapiRW11',
                 'ListSohibulSapiRW12',
                 'ListSohibulSapiLuar',
+                'ListSohibulSapiTidakDiambil',
             ];
             $className = class_basename(static::class);
             return in_array($className, $allowedPages);
+        }
+
+        if ($user->hasAnyRole(['distribusisapi', 'adminsapi'])) {
+            // distribusisapi dan adminsapi hanya bisa melihat menu Tidak Diambil
+            return static::class === ListSohibulSapiTidakDiambil::class;
         }
 
         return $user->hasAnyRole(['admin', 'adminsohibul', 'bendaharasapi']);
@@ -105,9 +112,10 @@ abstract class BaseListSohibulSapi extends ListRecords
     // ── Konfigurasi Tabel ─────────────────────────────────────────
     public function table(Table $table): Table
     {
-        $filterJenis = $this->filterJenis;
-        $filterRw    = $this->filterRw;
-        $filterLuar  = $this->filterLuar;
+        $filterJenis  = $this->filterJenis;
+        $filterRw     = $this->filterRw;
+        $filterLuar   = $this->filterLuar;
+        $filterBagian = $this->filterBagian;
 
         // Hitung total sohibul untuk info di heading tabel
         $count = SohibulSapi::query()
@@ -115,17 +123,19 @@ abstract class BaseListSohibulSapi extends ListRecords
             ->when($filterRw,     fn ($q) => $q->where('rw', $filterRw))
             ->when($filterLuar,   fn ($q) => $q->where('rt', 'non_warga'))
             ->when($this->filterPosisi, fn ($q) => $q->where('posisidana', $this->filterPosisi))
+            ->when($filterBagian, fn ($q) => $q->where('bagiansohibul', $filterBagian))
             ->count();
 
         return $table
             ->heading($this->getTitle())
             ->description("Total: {$count} sohibul")
-            ->modifyQueryUsing(function (Builder $query) use ($filterJenis, $filterRw, $filterLuar) {
+            ->modifyQueryUsing(function (Builder $query) use ($filterJenis, $filterRw, $filterLuar, $filterBagian) {
                 $query
                     ->when($filterJenis,  fn ($q) => $q->where('jenis', $filterJenis))
                     ->when($filterRw,     fn ($q) => $q->where('rw', $filterRw))
                     ->when($filterLuar,   fn ($q) => $q->where('rt', 'non_warga'))
-                    ->when($this->filterPosisi, fn ($q) => $q->where('posisidana', $this->filterPosisi));
+                    ->when($this->filterPosisi, fn ($q) => $q->where('posisidana', $this->filterPosisi))
+                    ->when($filterBagian, fn ($q) => $q->where('bagiansohibul', $filterBagian));
 
                 // Prioritas: Belum ada Map muncul di atas khusus untuk role petugasmap
                 if (auth()->user()?->hasRole('petugasmap')) {

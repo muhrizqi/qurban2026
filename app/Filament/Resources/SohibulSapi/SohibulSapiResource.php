@@ -38,7 +38,10 @@ class SohibulSapiResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return auth()->user()?->hasAnyRole(['admin', 'adminsohibul', 'bendaharasapi', 'petugasmap']);
+        return auth()->user()?->hasAnyRole([
+            'admin', 'adminsohibul', 'bendaharasapi',
+            'petugasmap', 'distribusisapi', 'adminsapi',
+        ]);
     }
 
     public static function shouldRegisterNavigation(): bool
@@ -355,8 +358,9 @@ class SohibulSapiResource extends Resource
             'rw12'    => Pages\ListSohibulSapiRW12::route('/rw12'),
             'luar'    => Pages\ListSohibulSapiLuar::route('/luar'),
             'kas'     => Pages\ListSohibulSapiKas::route('/kas'),
-            'rek_program' => Pages\ListSohibulSapiRekProgram::route('/rek-program'),
-            'rek_qurban'  => Pages\ListSohibulSapiRekQurban::route('/rek-qurban'),
+            'rek_program'    => Pages\ListSohibulSapiRekProgram::route('/rek-program'),
+            'rek_qurban'     => Pages\ListSohibulSapiRekQurban::route('/rek-qurban'),
+            'tidak_diambil'  => Pages\ListSohibulSapiTidakDiambil::route('/tidak-diambil'),
             // Wildcard routes — HARUS di akhir
             'view'    => Pages\ViewSohibulSapi::route('/{record}'),
             'edit'    => Pages\EditSohibulSapi::route('/{record}/edit'),
