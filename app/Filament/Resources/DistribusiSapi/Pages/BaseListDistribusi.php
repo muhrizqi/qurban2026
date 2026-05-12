@@ -88,12 +88,19 @@ abstract class BaseListDistribusi extends ListRecords
             ->columns([
                 TextColumn::make('no_sohibul')->label('No.')->sortable()->searchable(),
                 TextColumn::make('nama')->label('Nama')->sortable()->searchable(),
-                TextColumn::make('jenis')->label('Jenis')->badge(),
                 TextColumn::make('alamat')
                     ->label('Alamat & Maps')
                     ->html()
                     ->formatStateUsing(function ($state, SohibulSapi $record): string {
+                        $jenisLabel  = $record->jenis ?? '-';
+                        $bagianLabel = SohibulSapi::BAGIAN_OPTIONS[$record->bagiansohibul] ?? ($record->bagiansohibul ?? '-');
+
                         $out = 'RT ' . e($record->rt) . ' / RW ' . e($record->rw ?? '-') . '<br>' . e($state);
+
+                        // Jenis & Bagian
+                        $out .= '<br><small style="color:#6366f1;font-weight:600">🐄 ' . e($jenisLabel)
+                              . ' &nbsp;|&nbsp; 📦 ' . e($bagianLabel) . '</small>';
+
                         if ($record->nohp) {
                             $out .= '<br><small>📱 ' . e($record->nohp) . '</small>';
                         }
@@ -103,17 +110,22 @@ abstract class BaseListDistribusi extends ListRecords
                         return $out;
                     })
                     ->wrap(),
-                TextColumn::make('bagiansohibul')
-                    ->label('Bagian')
-                    ->badge()
-                    ->formatStateUsing(fn ($state) => SohibulSapi::BAGIAN_OPTIONS[$state] ?? $state),
                 TextColumn::make('status')
-                    ->label('Status')
+                    ->label('Status / PJ')
                     ->badge()
-                    ->formatStateUsing(fn ($state) => SohibulSapi::STATUS_LABEL[$state] ?? '-')
+                    ->html()
+                    ->formatStateUsing(function ($state, SohibulSapi $record): string {
+                        $statusLabel = SohibulSapi::STATUS_LABEL[$state] ?? '-';
+                        $out = e($statusLabel);
+                        // Tampilkan nama PJ di bawah status
+                        if ($record->penanggungJawab) {
+                            $out .= '<br><small style="font-weight:600;color:#374151">👤 ' . e($record->penanggungJawab->name) . '</small>';
+                        }
+                        return $out;
+                    })
                     ->color(fn ($state) => SohibulSapi::STATUS_COLOR[$state] ?? 'gray'),
-                TextColumn::make('penanggungJawab.name')->label('PJ')->default('-'),
             ])
+
             ->defaultSort('no_sohibul')
             ->filters([])
             ->actions([])

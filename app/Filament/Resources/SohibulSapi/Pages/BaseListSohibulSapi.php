@@ -175,20 +175,31 @@ abstract class BaseListSohibulSapi extends ListRecords
                     ->label('Alamat & Kontak')
                     ->html()
                     ->formatStateUsing(function ($state, SohibulSapi $record): string {
-                        $isPetugasMap = auth()->user()?->hasRole('petugasmap');
+                        $user         = auth()->user();
+                        $isPetugasMap = $user?->hasRole('petugasmap');
+                        $isMobileRole = $user?->hasAnyRole(['petugasmap', 'distribusisapi', 'adminsapi']);
+
                         $out = e($state);
 
-                        // No HP (tampilkan jika bukan petugasmap atau jika memang dibutuhkan)
+                        // Untuk role mobile: tampilkan jenis & bagian di bawah alamat
+                        if ($isMobileRole) {
+                            $jenisLabel  = $record->jenis ?? '-';
+                            $bagianLabel = SohibulSapi::BAGIAN_OPTIONS[$record->bagiansohibul] ?? ($record->bagiansohibul ?? '-');
+                            $out .= '<br><small style="color:#6366f1;font-weight:600">🐄 ' . e($jenisLabel)
+                                  . ' &nbsp;|&nbsp; 📦 ' . e($bagianLabel) . '</small>';
+                        }
+
+                        // No HP (tampilkan jika bukan petugasmap)
                         if ($record->nohp && ! $isPetugasMap) {
                             $out .= '<br><small>📱 ' . e($record->nohp) . '</small>';
                         }
 
                         // Kwitansi (Sembunyikan untuk petugasmap)
                         if ($record->kwitansi && ! $isPetugasMap) {
-                            $url = str_starts_with($record->kwitansi, 'http') 
-                                ? $record->kwitansi 
+                            $url = str_starts_with($record->kwitansi, 'http')
+                                ? $record->kwitansi
                                 : asset('storage/' . $record->kwitansi);
-                                
+
                             $out .= ' &nbsp;<a href="' . $url . '" target="_blank" '
                                   . 'style="color:#2563eb;font-size:0.75rem">📄 Kwitansi</a>';
                         }
