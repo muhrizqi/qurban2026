@@ -17,7 +17,7 @@ class PetaSohibulPage extends Page
 
     public static function shouldRegisterNavigation(array $parameters = []): bool
     {
-        return auth()->user()?->hasAnyRole(['admin', 'adminsohibul', 'bendaharasapi', 'adminsapi', 'distribusisapi']);
+        return auth()->user()?->hasAnyRole(['admin', 'adminsohibul', 'bendaharasapi', 'adminsapi', 'distribusisapi', 'petugasmap']);
     }
 
     public function getTitle(): string { return 'Peta Posisi Sohibul Sapi'; }

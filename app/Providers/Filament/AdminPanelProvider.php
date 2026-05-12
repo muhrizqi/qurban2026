@@ -123,7 +123,7 @@ class AdminPanelProvider extends PanelProvider
             ->icon('heroicon-o-map')
             ->url(fn () => PetaSohibulPage::getUrl())
             ->isActiveWhen(fn () => request()->routeIs('filament.admin.pages.peta-sohibul'))
-            ->visible(fn () => auth()->user()?->hasAnyRole(['adminsapi', 'distribusisapi']));
+            ->visible(fn () => auth()->user()?->hasAnyRole(['admin', 'adminsohibul', 'bendaharasapi', 'adminsapi', 'distribusisapi', 'petugasmap']));
 
         // ── Backup & Restore (Khusus Admin) ──────────────────────────
         $items[] = NavigationItem::make('💾 BACKUP & RESTORE')
