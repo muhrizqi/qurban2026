@@ -92,7 +92,11 @@ abstract class BaseListDistribusi extends ListRecords
             })
             ->columns([
                 TextColumn::make('no_sohibul')->label('No.')->sortable()->searchable(),
-                TextColumn::make('nama')->label('Nama')->sortable()->searchable(),
+                TextColumn::make('nama')
+                    ->label('Nama')
+                    ->sortable()
+                    ->searchable()
+                    ->wrap(),
                 TextColumn::make('jenis')
                     ->label('Jenis')
                     ->badge()

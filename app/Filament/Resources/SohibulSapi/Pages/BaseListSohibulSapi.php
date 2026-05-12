@@ -167,7 +167,8 @@ abstract class BaseListSohibulSapi extends ListRecords
                 TextColumn::make('nama')
                     ->label('Nama')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->wrap(),
 
                 // Alamat + nohp + link kwitansi + link urlmap
                 TextColumn::make('alamat')
