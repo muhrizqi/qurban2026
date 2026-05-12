@@ -231,8 +231,8 @@ abstract class BaseListSohibulSapi extends ListRecords
                     ->label('')
                     ->tooltip('Edit')
                     ->hidden(fn (SohibulSapi $record): bool =>
-                        (auth()->user()?->hasRole('adminsohibul') && $record->posisidana === 'Kas') ||
-                        (auth()->user()?->hasRole('petugasmap') && in_array($record->bagiansohibul, ['tidak_diambil', 'diambil_sendiri']))
+                        auth()->user()?->hasRole('petugasmap')
+                        && in_array($record->bagiansohibul, ['tidak_diambil', 'diambil_sendiri'])
                     ),
                 DeleteAction::make()
                     ->label('')
@@ -240,11 +240,7 @@ abstract class BaseListSohibulSapi extends ListRecords
                     ->requiresConfirmation()
                     ->modalHeading('Hapus Data Sohibul')
                     ->modalDescription('Apakah Anda yakin ingin menghapus data ini? Tindakan ini tidak bisa dibatalkan.')
-                    ->modalSubmitActionLabel('Ya, Hapus')
-                    ->hidden(fn (SohibulSapi $record): bool =>
-                        auth()->user()?->hasRole('adminsohibul')
-                        && $record->posisidana === 'Kas'
-                    ),
+                    ->modalSubmitActionLabel('Ya, Hapus'),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
