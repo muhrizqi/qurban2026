@@ -121,6 +121,26 @@ abstract class BaseListDistribusi extends ListRecords
                     ->searchable(),
                 TextColumn::make('nama')
                     ->label('Nama')
+                    ->html()
+                    ->formatStateUsing(function ($state, SohibulSapi $record): string {
+                        $out = e($state);
+                        $user = auth()->user();
+                        
+                        if ($user?->hasAnyRole(['adminsapi', 'distribusisapi'])) {
+                            $viewUrl = \App\Filament\Resources\SohibulSapi\SohibulSapiResource::getUrl('view', ['record' => $record]);
+                            
+                            $out .= '<div style="margin-top: 6px; display: flex; flex-wrap: wrap; gap: 4px;">';
+                            $out .= '<a href="' . $viewUrl . '" style="background:#eff6ff; border: 1px solid #bfdbfe; color:#1d4ed8; padding: 3px 6px; border-radius: 4px; font-size: 0.65rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">👁️ View</a>';
+                            
+                            if ($record->kwitansi) {
+                                $kwitansiUrl = asset('storage/' . $record->kwitansi);
+                                $out .= '<a href="' . $kwitansiUrl . '" target="_blank" style="background:#f0fdf4; border: 1px solid #bbf7d0; color:#15803d; padding: 3px 6px; border-radius: 4px; font-size: 0.65rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">📄 Kuitansi</a>';
+                            }
+                            $out .= '</div>';
+                        }
+                        
+                        return $out;
+                    })
                     ->sortable()
                     ->searchable()
                     ->wrap(),
