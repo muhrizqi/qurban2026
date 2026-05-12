@@ -276,7 +276,8 @@ abstract class BaseListSohibulSapi extends ListRecords
                     ->requiresConfirmation()
                     ->modalHeading('Hapus Data Sohibul')
                     ->modalDescription('Apakah Anda yakin ingin menghapus data ini? Tindakan ini tidak bisa dibatalkan.')
-                    ->modalSubmitActionLabel('Ya, Hapus'),
+                    ->modalSubmitActionLabel('Ya, Hapus')
+                    ->hidden(fn () => auth()->user()?->hasRole('petugasmap')),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
