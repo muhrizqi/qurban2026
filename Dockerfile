@@ -72,6 +72,8 @@ mkdir -p /var/www/html/storage/framework/cache/data\n\
 mkdir -p /var/www/html/storage/framework/sessions\n\
 mkdir -p /var/www/html/storage/logs\n\
 mkdir -p /var/www/html/storage/app/public\n\
+mkdir -p /var/www/html/storage/app/livewire-tmp\n\
+mkdir -p /var/www/html/storage/app/temp-backups\n\
 php artisan storage:link --force\n\
 php artisan migrate --force\n\
 rm -rf /var/www/html/storage/framework/views/*.php\n\

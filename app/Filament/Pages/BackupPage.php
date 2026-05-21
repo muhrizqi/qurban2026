@@ -143,25 +143,25 @@ class BackupPage extends Page implements HasForms
                                 $username = config('database.connections.pgsql.username');
                                 $password = config('database.connections.pgsql.password');
 
-                                // Drop semua tabel yang ada agar restore bersih tanpa konflik
-                                \Illuminate\Support\Facades\DB::statement("
-                                    DO \$\$ DECLARE
-                                        r RECORD;
-                                    BEGIN
-                                        FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') LOOP
-                                            EXECUTE 'DROP TABLE IF EXISTS ' || quote_ident(r.tablename) || ' CASCADE';
-                                        END LOOP;
-                                    END \$\$;
-                                ");
+                                // PENTING: DROP SCHEMA dan restore digabung dalam SATU perintah psql.
+                                // Jangan gunakan DB::statement() untuk DROP karena akan menghapus
+                                // tabel `sessions` di tengah request → session invalid → redirect login.
+                                // Dengan -c "DROP SCHEMA..." + -f dump.sql dalam satu psql process,
+                                // sessions table langsung dikembalikan oleh dump sebelum Laravel
+                                // mencoba menyimpan session di akhir request.
+                                $dropCmd = sprintf(
+                                    'DROP SCHEMA public CASCADE; CREATE SCHEMA public; GRANT ALL ON SCHEMA public TO %s; GRANT ALL ON SCHEMA public TO public;',
+                                    $username
+                                );
 
-                                // Jalankan psql untuk restore dump
                                 $command = sprintf(
-                                    'PGPASSWORD=%s psql -h %s -p %s -U %s -d %s -f %s 2>&1',
+                                    'PGPASSWORD=%s psql -h %s -p %s -U %s -d %s -c %s -f %s 2>&1',
                                     escapeshellarg($password),
                                     escapeshellarg($host),
                                     escapeshellarg($port),
                                     escapeshellarg($username),
                                     escapeshellarg($dbName),
+                                    escapeshellarg($dropCmd),
                                     escapeshellarg($sqlFilePath)
                                 );
 
