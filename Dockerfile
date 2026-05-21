@@ -58,6 +58,10 @@ ENV NGINX_CLIENT_MAX_BODY_SIZE=100M
 # Copy custom NGINX config: healthcheck dijawab langsung oleh NGINX (bypass PHP-FPM)
 COPY docker/nginx/healthcheck.conf /etc/nginx/conf.d/healthcheck.conf
 
+# Copy custom PHP ini: naikkan batas upload menjadi 100MB
+# serversideup/php membaca conf.d dari /etc/php/current/conf.d/
+COPY docker/php/uploads.ini /etc/php/current/conf.d/uploads.ini
+
 
 # Buat struktur folder storage dasar karena Volume Mount Easypanel akan 
 # menimpa folder storage bawaan Laravel menjadi kosong melompong.
