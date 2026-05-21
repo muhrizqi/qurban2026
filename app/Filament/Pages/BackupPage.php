@@ -109,68 +109,115 @@ class BackupPage extends Page implements HasForms
 
         $zip = new ZipArchive();
         if ($zip->open($filePath) === TRUE) {
-            
             $tempPath = storage_path('app/temp-restore-' . uniqid());
-            File::makeDirectory($tempPath);
+            File::makeDirectory($tempPath, 0755, true, true);
 
-            // 1. Restore Database
-            $dbConn = config('database.default');
-            
-            if ($dbConn === 'sqlite') {
-                // Cari database.sqlite di dalam zip (bisa di root atau di folder database/)
-                $dbInsidePath = null;
-                if ($zip->locateName('database.sqlite') !== false) {
-                    $dbInsidePath = 'database.sqlite';
-                } elseif ($zip->locateName('database/database.sqlite') !== false) {
-                    $dbInsidePath = 'database/database.sqlite';
-                }
+            try {
+                // 1. Restore Database
+                $dbConn = config('database.default');
 
-                if ($dbInsidePath) {
-                    $zip->extractTo($tempPath, $dbInsidePath);
-                    File::copy(database_path('database.sqlite'), database_path('database.sqlite.bak'));
-                    File::move($tempPath . '/' . $dbInsidePath, database_path('database.sqlite'));
-                }
-            } elseif (in_array($dbConn, ['mysql', 'pgsql'])) {
-                // Untuk MySQL atau PostgreSQL, cari file .sql di dalam folder db-dumps/
-                for ($i = 0; $i < $zip->numFiles; $i++) {
-                    $name = $zip->getNameIndex($i);
-                    if (str_starts_with($name, 'db-dumps/') && str_ends_with($name, '.sql')) {
-                        $zip->extractTo($tempPath, $name);
-                        $sqlContent = File::get($tempPath . '/' . $name);
-                        
-                        // Jalankan SQL dump ke database aktif
-                        \Illuminate\Support\Facades\DB::unprepared($sqlContent);
+                if ($dbConn === 'sqlite') {
+                    $dbInsidePath = null;
+                    if ($zip->locateName('database.sqlite') !== false) {
+                        $dbInsidePath = 'database.sqlite';
+                    } elseif ($zip->locateName('database/database.sqlite') !== false) {
+                        $dbInsidePath = 'database/database.sqlite';
+                    }
+                    if ($dbInsidePath) {
+                        $zip->extractTo($tempPath, $dbInsidePath);
+                        File::copy(database_path('database.sqlite'), database_path('database.sqlite.bak'));
+                        File::move($tempPath . '/' . $dbInsidePath, database_path('database.sqlite'));
+                    }
+
+                } elseif (in_array($dbConn, ['mysql', 'pgsql'])) {
+                    for ($i = 0; $i < $zip->numFiles; $i++) {
+                        $name = $zip->getNameIndex($i);
+                        if (str_starts_with($name, 'db-dumps/') && str_ends_with($name, '.sql')) {
+                            $zip->extractTo($tempPath, $name);
+                            $sqlFilePath = $tempPath . '/' . $name;
+
+                            if ($dbConn === 'pgsql') {
+                                $host     = config('database.connections.pgsql.host');
+                                $port     = config('database.connections.pgsql.port', 5432);
+                                $dbName   = config('database.connections.pgsql.database');
+                                $username = config('database.connections.pgsql.username');
+                                $password = config('database.connections.pgsql.password');
+
+                                // Drop semua tabel yang ada agar restore bersih tanpa konflik
+                                \Illuminate\Support\Facades\DB::statement("
+                                    DO \$\$ DECLARE
+                                        r RECORD;
+                                    BEGIN
+                                        FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') LOOP
+                                            EXECUTE 'DROP TABLE IF EXISTS ' || quote_ident(r.tablename) || ' CASCADE';
+                                        END LOOP;
+                                    END \$\$;
+                                ");
+
+                                // Jalankan psql untuk restore dump
+                                $command = sprintf(
+                                    'PGPASSWORD=%s psql -h %s -p %s -U %s -d %s -f %s 2>&1',
+                                    escapeshellarg($password),
+                                    escapeshellarg($host),
+                                    escapeshellarg($port),
+                                    escapeshellarg($username),
+                                    escapeshellarg($dbName),
+                                    escapeshellarg($sqlFilePath)
+                                );
+
+                                $output = shell_exec($command);
+
+                                if (str_contains((string) $output, 'FATAL')) {
+                                    throw new \Exception('psql restore gagal: ' . $output);
+                                }
+
+                            } elseif ($dbConn === 'mysql') {
+                                $sqlContent = File::get($sqlFilePath);
+                                \Illuminate\Support\Facades\DB::unprepared($sqlContent);
+                            }
+                        }
                     }
                 }
-            }
 
-            // 2. Restore Kwitansi
-            // Cari file yang mengandung 'kwitansi/' dalam path-nya
-            for ($i = 0; $i < $zip->numFiles; $i++) {
-                $name = $zip->getNameIndex($i);
-                if (str_contains($name, 'kwitansi/')) {
-                    // Kita ekstrak ke public/storage, tapi kita perlu memotong path awal jika ada
-                    // Contoh: public/storage/kwitansi/file.jpg -> kwitansi/file.jpg
-                    $zip->extractTo(public_path('storage'), $name);
+                // 2. Restore Kwitansi
+                for ($i = 0; $i < $zip->numFiles; $i++) {
+                    $name = $zip->getNameIndex($i);
+                    if (str_contains($name, 'kwitansi/')) {
+                        $zip->extractTo(public_path('storage'), $name);
+                    }
                 }
+
+                Notification::make()
+                    ->title('Restore Berhasil')
+                    ->body('Data telah dipulihkan dari file backup.')
+                    ->success()
+                    ->persistent()
+                    ->send();
+
+                $this->data = [];
+
+            } catch (\Exception $e) {
+                Notification::make()
+                    ->title('Restore Gagal')
+                    ->body($e->getMessage())
+                    ->danger()
+                    ->persistent()
+                    ->send();
+
+                \Illuminate\Support\Facades\Log::error('Restore backup gagal: ' . $e->getMessage());
+
+            } finally {
+                // Selalu bersihkan temp folder dan file upload
+                $zip->close();
+                File::deleteDirectory($tempPath);
+                File::delete($filePath);
             }
 
-            $zip->close();
-            File::deleteDirectory($tempPath);
-            File::delete($filePath);
-
-            Notification::make()
-                ->title('Restore Berhasil')
-                ->body('Data telah dipulihkan. Jika menggunakan SQLite, database lama dicadangkan sebagai .bak')
-                ->success()
-                ->persistent()
-                ->send();
-            
-            $this->data = [];
         } else {
             Notification::make()->title('Gagal membuka file zip')->danger()->send();
         }
     }
+
 
     public function getView(): string
     {
