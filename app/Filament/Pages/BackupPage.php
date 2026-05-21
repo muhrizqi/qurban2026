@@ -167,6 +167,9 @@ class BackupPage extends Page implements HasForms
 
                                 $output = shell_exec($command);
 
+                                // Log output psql untuk debug
+                                \Illuminate\Support\Facades\Log::info('psql restore output: ' . (string) $output);
+
                                 if (str_contains((string) $output, 'FATAL')) {
                                     throw new \Exception('psql restore gagal: ' . $output);
                                 }
@@ -187,14 +190,22 @@ class BackupPage extends Page implements HasForms
                     }
                 }
 
+                // Re-login user setelah restore database selesai.
+                // Setelah restore, tabel `sessions` diganti dengan data dari backup,
+                // sehingga session aktif user hilang dan user akan ter-logout secara otomatis.
+                // Kita re-login user dengan ID yang sama agar tetap masuk.
+                $userId = auth()->id();
+                \Illuminate\Support\Facades\Auth::loginUsingId($userId, remember: true);
+
                 Notification::make()
                     ->title('Restore Berhasil')
-                    ->body('Data telah dipulihkan dari file backup.')
+                    ->body('Data telah dipulihkan dari file backup. Anda tetap masuk sebagai admin.')
                     ->success()
                     ->persistent()
                     ->send();
 
                 $this->data = [];
+
 
             } catch (\Exception $e) {
                 Notification::make()
