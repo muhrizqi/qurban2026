@@ -47,8 +47,16 @@ ENV PHP_FPM_PM_START_SERVERS=4
 ENV PHP_FPM_PM_MIN_SPARE_SERVERS=2
 ENV PHP_FPM_PM_MAX_SPARE_SERVERS=8
 
+# Naikkan batas upload PHP menjadi 100MB
+ENV PHP_POST_MAX_SIZE=100M
+ENV PHP_UPLOAD_MAX_FILESIZE=100M
+ENV PHP_MEMORY_LIMIT=256M
+
 # Copy custom NGINX config: healthcheck dijawab langsung oleh NGINX (bypass PHP-FPM)
 COPY docker/nginx/healthcheck.conf /etc/nginx/conf.d/healthcheck.conf
+
+# Naikkan batas upload Nginx menjadi 100MB (default Nginx hanya 1MB)
+COPY docker/nginx/upload-limit.conf /etc/nginx/conf.d/upload-limit.conf
 
 
 # Buat struktur folder storage dasar karena Volume Mount Easypanel akan 
