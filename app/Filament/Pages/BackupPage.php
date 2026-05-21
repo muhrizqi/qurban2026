@@ -46,6 +46,7 @@ class BackupPage extends Page implements HasForms
                             ->label('File Backup (.zip)')
                             ->required()
                             ->acceptedFileTypes(['application/zip', 'application/x-zip-compressed'])
+                            ->maxSize(102400) // 100MB dalam kilobytes
                             ->disk('local')
                             ->directory('temp-backups')
                             ->visibility('private')

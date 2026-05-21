@@ -48,10 +48,10 @@ ENV PHP_FPM_PM_MIN_SPARE_SERVERS=2
 ENV PHP_FPM_PM_MAX_SPARE_SERVERS=8
 
 # Naikkan batas upload PHP dan Nginx menjadi 100MB
-# NGINX_CLIENT_MAX_BODY_SIZE adalah ENV variable resmi dari image serversideup/php
-# yang akan menimpa nilai default di nginx.conf bawaan image (tidak duplikat)
+# Nama ENV resmi dari image serversideup/php:
+# https://serversideup.net/open-source/docker-php/docs/reference/environment-variable-specification
 ENV PHP_POST_MAX_SIZE=100M
-ENV PHP_UPLOAD_MAX_FILESIZE=100M
+ENV PHP_UPLOAD_MAX_FILE_SIZE=100M
 ENV PHP_MEMORY_LIMIT=256M
 ENV NGINX_CLIENT_MAX_BODY_SIZE=100M
 
