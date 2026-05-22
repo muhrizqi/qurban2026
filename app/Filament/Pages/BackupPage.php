@@ -10,17 +10,18 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Schemas\Components\Section;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\File;
+use BackedEnum;
+use UnitEnum;
 use ZipArchive;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class BackupPage extends Page implements HasForms
 {
     use InteractsWithForms;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-cloud-arrow-down';
+    protected static BackedEnum|string|null $navigationIcon = 'heroicon-o-cloud-arrow-down';
     protected static ?string $navigationLabel = 'Backup & Restore';
     protected static ?string $title = 'Backup & Restore';
-    protected static string | \UnitEnum | null $navigationGroup = 'Sistem';
+    protected static UnitEnum|string|null $navigationGroup = 'Sistem';
     protected static ?int $navigationSort = 100;
 
     public ?array $data = [];
@@ -183,12 +184,43 @@ class BackupPage extends Page implements HasForms
                 }
 
                 // 2. Restore Kwitansi
+                // backup.php menggunakan 'relative_path' => null sehingga path di dalam zip
+                // bisa berupa path ABSOLUT seperti:
+                //   /var/www/html/public/storage/kwitansi/file.jpg
+                // atau path relatif seperti:
+                //   var/www/html/public/storage/kwitansi/file.jpg
+                //
+                // Kita selalu ambil HANYA nama file (basename) dan simpan langsung
+                // ke storage/app/public/kwitansi/ agar tidak terjadi path ganda.
+                $kwitansiDest = storage_path('app/public/kwitansi');
+                File::makeDirectory($kwitansiDest, 0755, true, true);
+
+                $restoredCount = 0;
                 for ($i = 0; $i < $zip->numFiles; $i++) {
                     $name = $zip->getNameIndex($i);
-                    if (str_contains($name, 'kwitansi/')) {
-                        $zip->extractTo(public_path('storage'), $name);
+
+                    // Normalisasi: hapus leading slash jika ada
+                    $normalizedName = ltrim($name, '/');
+
+                    // Cek apakah path ini berisi folder kwitansi dan bukan folder itu sendiri
+                    if (str_contains($normalizedName, 'kwitansi/') && !str_ends_with($normalizedName, '/')) {
+                        // Ambil nama file saja (tanpa path absolut/relatif di depannya)
+                        $fileName = basename($normalizedName);
+
+                        // Abaikan jika nama file kosong atau hanya berisi titik
+                        if (empty($fileName) || $fileName === '.' || $fileName === '..') {
+                            continue;
+                        }
+
+                        $fileContent = $zip->getFromIndex($i);
+                        if ($fileContent !== false) {
+                            File::put($kwitansiDest . '/' . $fileName, $fileContent);
+                            $restoredCount++;
+                        }
                     }
                 }
+
+                \Illuminate\Support\Facades\Log::info("Restore kwitansi selesai: {$restoredCount} file dipulihkan ke {$kwitansiDest}");
 
                 // Re-login user setelah restore database selesai.
                 // Setelah restore, tabel `sessions` diganti dengan data dari backup,
