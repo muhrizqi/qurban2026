@@ -76,6 +76,8 @@ mkdir -p /var/www/html/storage/app/livewire-tmp\n\
 mkdir -p /var/www/html/storage/app/temp-backups\n\
 php artisan storage:link --force\n\
 php artisan migrate --force\n\
+php artisan config:clear\n\
+php artisan cache:clear\n\
 rm -rf /var/www/html/storage/framework/views/*.php\n\
 php artisan view:clear\n\
 chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache\n\
