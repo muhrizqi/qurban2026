@@ -244,16 +244,36 @@ document.addEventListener('DOMContentLoaded', function () {
         ? [RAW_MARKERS[0].lat, RAW_MARKERS[0].lng]
         : [-7.8014, 110.3649];
 
+    const MAP_MAX_ZOOM = 20;
+    const MAP_MIN_ZOOM = 10;
+
     const map = L.map('sohibul-map', {
-        center     : defaultCenter,
-        zoom       : 14,
-        zoomControl: true,
-        attributionControl: false // Sembunyikan tulisan Leaflet, geoapify, openstreet, dan bendera
+        center           : defaultCenter,
+        zoom             : 14,
+        minZoom          : MAP_MIN_ZOOM,
+        maxZoom          : MAP_MAX_ZOOM,
+        zoomControl      : true,
+        attributionControl: false, // Sembunyikan tulisan Leaflet, geoapify, openstreet, dan bendera
+        // Batasi zoom gesture di HP (touch) agar tidak melampaui maxZoom
+        touchZoom        : true,
+        bounceAtZoomLimits: true,
+    });
+
+    // Paksa kembali ke maxZoom jika user pinch-zoom melampaui batas (khusus mobile)
+    map.on('zoomend', function () {
+        const z = map.getZoom();
+        if (z > MAP_MAX_ZOOM) {
+            map.setZoom(MAP_MAX_ZOOM, { animate: false });
+        }
+        if (z < MAP_MIN_ZOOM) {
+            map.setZoom(MAP_MIN_ZOOM, { animate: false });
+        }
     });
 
     // Pasang tile layer default
     L.tileLayer(`https://maps.geoapify.com/v1/tile/osm-carto/{z}/{x}/{y}.png?apiKey=${GEOAPIFY_KEY}`, {
-        maxZoom: 20,
+        maxZoom: MAP_MAX_ZOOM,
+        minZoom: MAP_MIN_ZOOM,
     }).addTo(map);
 
 
