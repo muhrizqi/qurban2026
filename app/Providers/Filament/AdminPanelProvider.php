@@ -89,7 +89,8 @@ class AdminPanelProvider extends PanelProvider
             ['key' => 'rw11',    'label' => 'RW 11',   'sort' => 8],
             ['key' => 'rw12',    'label' => 'RW 12',   'sort' => 9],
             ['key' => 'luar',    'label' => 'JAMAAH LUAR', 'sort' => 10],
-            ['key' => 'tidak_diambil', 'label' => '🚫 TIDAK DIAMBIL', 'sort' => 11, 'roles' => ['admin', 'adminsohibul', 'bendaharasapi', 'petugasmap', 'distribusisapi', 'adminsapi']],
+            ['key' => 'tidak_diambil',   'label' => '🚫 TIDAK DIAMBIL',   'sort' => 11, 'roles' => ['admin', 'adminsohibul', 'bendaharasapi', 'petugasmap', 'distribusisapi', 'adminsapi']],
+            ['key' => 'diambil_sendiri', 'label' => '🏠 DIAMBIL SENDIRI', 'sort' => 12, 'roles' => ['admin', 'adminsohibul', 'bendaharasapi', 'petugasmap', 'distribusisapi', 'adminsapi']],
         ];
 
         $items = [];
