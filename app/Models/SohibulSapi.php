@@ -33,6 +33,7 @@ class SohibulSapi extends Model
     protected $casts = [
         'nilaisepertuju' => 'integer',
         'status'         => 'integer',
+        'pj'             => 'integer', // pastikan perbandingan === dengan $user->id (int) benar
     ];
 
     // ── Konstanta ────────────────────────────────────────────────
