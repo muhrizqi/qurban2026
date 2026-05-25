@@ -76,7 +76,7 @@
 </div>
 
 {{-- ── Map Container ───────────────────────────────────────────────── --}}
-<div wire:ignore class="relative rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-lg" style="height:600px;">
+<div id="sohibul-map-wrapper" wire:ignore class="relative rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-lg" style="height:600px;">
 
     {{-- Marker Count Badge --}}
     <div id="marker-count-badge"
@@ -151,6 +151,19 @@
     background: #1f2937 !important;
     color: #ffffff !important;
     box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+
+/* ── Cegah browser-level pinch zoom pada container peta ──────────────
+   touch-action: none  → serahkan semua gesture ke Leaflet, bukan browser.
+   Tanpa ini, browser bisa CSS-scale seluruh halaman saat pinch,
+   sehingga tile layer dan marker layer meleset dari posisinya. */
+#sohibul-map-wrapper,
+#sohibul-map {
+    touch-action: none;
+    -ms-touch-action: none;
+    /* Matikan user-select agar long-press tidak mengganggu drag peta */
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 /* Custom Leaflet popup */
@@ -259,15 +272,40 @@ document.addEventListener('DOMContentLoaded', function () {
         bounceAtZoomLimits: true,
     });
 
-    // Paksa kembali ke maxZoom jika user pinch-zoom melampaui batas (khusus mobile)
+    // ── Paksa kembali ke batas jika Leaflet zoom melampaui batas ────
     map.on('zoomend', function () {
         const z = map.getZoom();
-        if (z > MAP_MAX_ZOOM) {
-            map.setZoom(MAP_MAX_ZOOM, { animate: false });
+        if (z > MAP_MAX_ZOOM) map.setZoom(MAP_MAX_ZOOM, { animate: false });
+        if (z < MAP_MIN_ZOOM) map.setZoom(MAP_MIN_ZOOM, { animate: false });
+    });
+
+    // ── Cegah BROWSER-LEVEL pinch zoom pada container peta ───────────
+    // Skenario masalah: browser men-CSS-scale seluruh halaman saat pinch,
+    // sehingga tile layer dan marker tidak ikut di-recalculate → posisi meleset.
+    // Solusi: intercept event touch multi-jari sebelum browser memprosesnya.
+    const mapEl = map.getContainer();
+
+    // (1) Safari/iOS: gesturestart & gesturechange adalah event zoom-specific
+    mapEl.addEventListener('gesturestart',  function (e) { e.preventDefault(); }, { passive: false });
+    mapEl.addEventListener('gesturechange', function (e) { e.preventDefault(); }, { passive: false });
+    mapEl.addEventListener('gestureend',    function (e) { e.preventDefault(); }, { passive: false });
+
+    // (2) Android Chrome & browser lain: touchmove dengan 2+ jari = pinch
+    //     preventDefault() di sini mencegah browser men-scale halaman;
+    //     Leaflet tetap bisa handle zoom-nya sendiri lewat listener internalnya.
+    mapEl.addEventListener('touchmove', function (e) {
+        if (e.touches.length >= 2) {
+            e.preventDefault();
         }
-        if (z < MAP_MIN_ZOOM) {
-            map.setZoom(MAP_MIN_ZOOM, { animate: false });
-        }
+    }, { passive: false });
+
+    // (3) Setelah resize window (misal: rotate HP), paksa Leaflet recalculate
+    //     ukuran container agar posisi layer kembali benar.
+    window.addEventListener('resize', function () {
+        clearTimeout(window._mapResizeTimer);
+        window._mapResizeTimer = setTimeout(function () {
+            map.invalidateSize();
+        }, 200);
     });
 
     // Pasang tile layer default
