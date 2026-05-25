@@ -460,14 +460,20 @@ document.addEventListener('DOMContentLoaded', function () {
         </div>`;
     }
 
-    // ── Cluster configuration ────────────────────────────────
-    // Markers yang berjarak < CLUSTER_DISTANCE derajat (~11 meter)
-    // dikelompokkan menjadi satu marker cluster dengan popup carousel.
-    const CLUSTER_DISTANCE = 0.0001;
+    // ── Cluster configuration (pixel-based) ─────────────────
+    // Dua marker dikumpulkan jika IKON-nya tumpang tindih di zoom maksimal.
+    // Pendekatan ini lebih akurat dari jarak geografis tetap karena langsung
+    // mengukur apakah dua ikon akan saling menutupi di layar.
+    //
+    // PIXEL_CLUSTER_THRESHOLD = 40px ≈ 1.25× lebar ikon marker (32px).
+    // Contoh: R161, R328, R337 yang berjarak ~50m akan terdeteksi di zoom 20.
+    const PIXEL_CLUSTER_THRESHOLD = 40;
 
-    function isClose(a, b) {
-        return Math.abs(a.lat - b.lat) < CLUSTER_DISTANCE
-            && Math.abs(a.lng - b.lng) < CLUSTER_DISTANCE;
+    // Hitung jarak piksel antara dua marker pada zoom referensi
+    function pixelDist(a, b, zoom) {
+        const pa = map.project([a.lat, a.lng], zoom);
+        const pb = map.project([b.lat, b.lng], zoom);
+        return Math.sqrt(Math.pow(pa.x - pb.x, 2) + Math.pow(pa.y - pb.y, 2));
     }
 
     // Tentukan status dominan grup: prioritas belum (0) > proses (1) > selesai (2)
@@ -477,7 +483,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return 2;
     }
 
-    // Kelompokkan RAW_MARKERS berdasarkan kedekatan
+    // Kelompokkan RAW_MARKERS berdasarkan kedekatan piksel di zoom maksimal
     function buildGroups(markers) {
         const groups = [];
         const used   = new Set();
@@ -486,7 +492,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const g = [m];
             used.add(i);
             markers.forEach((m2, j) => {
-                if (j !== i && !used.has(j) && isClose(m, m2)) {
+                if (j !== i && !used.has(j) && pixelDist(m, m2, MAP_MAX_ZOOM) < PIXEL_CLUSTER_THRESHOLD) {
                     g.push(m2);
                     used.add(j);
                 }
