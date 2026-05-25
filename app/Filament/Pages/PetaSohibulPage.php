@@ -28,6 +28,7 @@ class PetaSohibulPage extends Page
         return SohibulSapi::query()
             ->whereNotNull('urlmap')
             ->where('urlmap', '!=', '')
+            ->with('penanggungJawab')          // eager load PJ agar tidak N+1
             ->get()
             ->map(function (SohibulSapi $s): ?array {
                 $coords = $this->extractCoords($s->urlmap);
@@ -47,6 +48,7 @@ class PetaSohibulPage extends Page
                     'bagian'   => SohibulSapi::BAGIAN_OPTIONS[$s->bagiansohibul] ?? $s->bagiansohibul,
                     'status'   => (int) $s->status,
                     'statusLabel' => SohibulSapi::STATUS_LABEL[$s->status] ?? '-',
+                    'pj_nama'  => $s->penanggungJawab?->name ?? null, // nama petugas PJ
                     'urlmap'   => $s->urlmap,
                 ];
             })
@@ -108,7 +110,7 @@ class PetaSohibulPage extends Page
         $sohibul = SohibulSapi::find($id);
         if ($sohibul && $sohibul->status === 0) {
             $sohibul->update([
-                'pj' => $user->id,
+                'pj'     => $user->id,
                 'status' => 1,
             ]);
             
@@ -118,8 +120,8 @@ class PetaSohibulPage extends Page
                 ->body('Anda ditugaskan mengantarkan daging untuk ' . $sohibul->nama)
                 ->send();
 
-            // Trigger event to frontend to update marker without reloading map
-            $this->dispatch('marker-updated', id: $id, status: 1);
+            // Sertakan pj_nama agar marker di peta langsung update tanpa reload
+            $this->dispatch('marker-updated', id: $id, status: 1, pj_nama: $user->name);
         }
     }
 }

@@ -447,15 +447,21 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     function makePopup(d) {
-        const s    = STATUS[d.status] ?? STATUS[0];
+        const s       = STATUS[d.status] ?? STATUS[0];
         const nohpRaw = d.nohp ? d.nohp.toString().replace(/\D/g, '').replace(/^0/, '') : '';
         const waLink  = nohpRaw
-            ? `<a href="https://wa.me/62${nohpRaw}" target="_blank" class="popup-link" style="color:#25D366">📱 WA: ${d.nohp}</a>`
+            ? `<a href="https://wa.me/62${nohpRaw}" target="_blank" class="popup-link" style="color:#25D366">&#128241; WA: ${d.nohp}</a>`
             : '';
-        const mapsLink = `<a href="${d.urlmap}" target="_blank" class="popup-link" style="color:#2563eb">📍 Google Maps</a>`;
+        const mapsLink = `<a href="${d.urlmap}" target="_blank" class="popup-link" style="color:#2563eb">&#128205; Google Maps</a>`;
 
-        const antarkanBtn = (isPetugas && d.status === 0) 
-            ? `<button onclick="confirmAntarkan(${d.id}, '${d.nama.replace(/'/g, "\\'")}')" style="background:#22c55e; color:#fff; padding:6px 12px; border-radius:6px; border:none; cursor:pointer; font-size:12px; font-weight:bold; width:100%; margin-top:10px; display:flex; justify-content:center; align-items:center; gap:6px;">🚚 Antarkan Daging</button>`
+        const antarkanBtn = (isPetugas && d.status === 0)
+            ? `<button onclick="confirmAntarkan(${d.id}, '${d.nama.replace(/'/g, "\\'")}')" style="background:#22c55e; color:#fff; padding:6px 12px; border-radius:6px; border:none; cursor:pointer; font-size:12px; font-weight:bold; width:100%; margin-top:10px; display:flex; justify-content:center; align-items:center; gap:6px;">&#128666; Antarkan Daging</button>`
+            : '';
+
+        // Tampilkan nama PJ hanya saat status Dalam Proses (1) atau Selesai (2)
+        const pjRow = (d.status >= 1 && d.pj_nama)
+            ? `<span class="popup-label">Petugas</span>
+               <span style="font-weight:600;color:#1d4ed8">&#128100; ${d.pj_nama}</span>`
             : '';
 
         return `<div class="popup-inner">
@@ -479,6 +485,7 @@ document.addEventListener('DOMContentLoaded', function () {
                       style="background:${s.badgeBg};color:${s.badgeText}">
                     ${d.statusLabel}
                 </span>
+                ${pjRow}
             </div>
             <div class="popup-footer">
                 ${waLink}
@@ -722,6 +729,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const detail    = event.detail[0] || event.detail;
         const id        = detail.id;
         const newStatus = detail.status;
+        // pj_nama dikirim dari antarkanSohibul() saat petugas mengambil tugas
+        const newPjNama = detail.pj_nama ?? null;
 
         // Temukan grup yang mengandung item dengan id ini
         for (const g of allGroups) {
@@ -730,6 +739,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             item.status      = newStatus;
             item.statusLabel = STATUS[newStatus].label;
+            if (newPjNama) item.pj_nama = newPjNama; // simpan nama petugas
 
             if (!g.isCluster) {
                 // Marker tunggal: update ikon & popup langsung
@@ -751,6 +761,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     _clusterIdx   = Math.min(_clusterIdx, Math.max(0, vis.length - 1));
                     if (vis.length > 0) {
                         _clusterPopup.setContent(makeClusterPopupHtml(vis, _clusterIdx));
+                        stopPopupClickProp();
                     } else {
                         g.marker.closePopup();
                     }
