@@ -526,10 +526,21 @@ document.addEventListener('DOMContentLoaded', function () {
     let _clusterIdx    = 0;    // index aktif
     let _clusterPopup  = null; // referensi L.Popup yang sedang terbuka
 
+    // Helper: pasang L.DomEvent.disableClickPropagation pada content node popup
+    // agar klik di dalam popup (termasuk tombol arrow) TIDAK merambat ke peta.
+    // Harus dipanggil setiap kali setContent dijalankan karena Leaflet
+    // mengganti innerHTML sehingga listener lama hilang.
+    function stopPopupClickProp() {
+        if (_clusterPopup && _clusterPopup._contentNode) {
+            L.DomEvent.disableClickPropagation(_clusterPopup._contentNode);
+        }
+    }
+
     window.navigateCluster = function (dir) {
         _clusterIdx = (_clusterIdx + dir + _clusterItems.length) % _clusterItems.length;
         if (_clusterPopup) {
             _clusterPopup.setContent(makeClusterPopupHtml(_clusterItems, _clusterIdx));
+            stopPopupClickProp();
         }
     };
 
@@ -537,23 +548,32 @@ document.addEventListener('DOMContentLoaded', function () {
         _clusterIdx = idx;
         if (_clusterPopup) {
             _clusterPopup.setContent(makeClusterPopupHtml(_clusterItems, _clusterIdx));
+            stopPopupClickProp();
         }
     };
 
     // HTML nav bar untuk cluster popup
+    // Setiap onclick button juga memanggil event.stopPropagation() sebagai
+    // lapisan pertahanan pertama sebelum L.DomEvent.disableClickPropagation.
     function makeClusterPopupHtml(items, idx) {
         const total = items.length;
         const dotsHtml = items.map((_, i) =>
-            `<span class="cluster-nav-dot${i === idx ? ' active' : ''}" onclick="jumpCluster(${i})" title="Sohibul ${i+1}"></span>`
+            `<span class="cluster-nav-dot${i === idx ? ' active' : ''}"
+                   onclick="event.stopPropagation();jumpCluster(${i})"
+                   title="Sohibul ${i+1}"></span>`
         ).join('');
         const nav = `
             <div class="cluster-nav">
-                <button class="cluster-nav-btn" onclick="navigateCluster(-1)" title="Sebelumnya">&#8249;</button>
+                <button class="cluster-nav-btn"
+                        onclick="event.stopPropagation();navigateCluster(-1)"
+                        title="Sebelumnya">&#8249;</button>
                 <div class="cluster-nav-center">
-                    <span class="cluster-nav-label">📍 ${idx + 1} dari ${total} sohibul</span>
+                    <span class="cluster-nav-label">&#128205; ${idx + 1} dari ${total} sohibul</span>
                     <div class="cluster-nav-dots">${dotsHtml}</div>
                 </div>
-                <button class="cluster-nav-btn" onclick="navigateCluster(1)" title="Berikutnya">&#8250;</button>
+                <button class="cluster-nav-btn"
+                        onclick="event.stopPropagation();navigateCluster(1)"
+                        title="Berikutnya">&#8250;</button>
             </div>`;
         return nav + makePopup(items[idx]);
     }
@@ -581,13 +601,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (isCluster) {
             marker.bindPopup('', { maxWidth: 320, minWidth: 260 });
-            marker.on('click', function () {
+
+            // Gunakan popupopen (bukan click) karena pada saat popupopen
+            // popup sudah benar-benar ada di DOM sehingga:
+            // (a) setContent langsung ter-render, dan
+            // (b) disableClickPropagation bisa dipasang ke _contentNode.
+            marker.on('popupopen', function () {
                 _clusterItems = items;
                 _clusterIdx   = 0;
                 _clusterPopup = this.getPopup();
                 _clusterPopup.setContent(makeClusterPopupHtml(items, 0));
+                // Pasang proteksi: klik di dalam popup tidak merambat ke peta
+                stopPopupClickProp();
             });
-            // Tutup state saat popup ditutup
+
+            // Reset state saat popup ditutup
             marker.on('popupclose', function () {
                 _clusterPopup = null;
             });
