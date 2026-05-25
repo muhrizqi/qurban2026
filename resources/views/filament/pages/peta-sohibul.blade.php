@@ -7,79 +7,32 @@
     $markersJson = json_encode($markers, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT);
 @endphp
 
-{{-- ── Stats Bar ──────────────────────────────────────────────────── --}}
-<div class="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-4">
-    <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4 flex flex-col items-center">
-        <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Total Sohibul</p>
-        <p class="text-2xl font-bold text-gray-800 dark:text-white">{{ $stats['total'] }}</p>
-    </div>
-    <div class="bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800 p-4 flex flex-col items-center">
-        <p class="text-xs text-blue-600 dark:text-blue-400 mb-1">Ada Koordinat</p>
-        <p class="text-2xl font-bold text-blue-700 dark:text-blue-300">{{ $stats['mapped'] }}</p>
-    </div>
-    <div class="bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 flex flex-col items-center">
-        <span class="text-lg mb-1">⬜</span>
-        <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Belum Diproses</p>
-        <p class="text-2xl font-bold text-gray-700 dark:text-gray-200">{{ $stats['belum'] }}</p>
-    </div>
-    <div class="bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-200 dark:border-amber-800 p-4 flex flex-col items-center">
-        <span class="text-lg mb-1">🟡</span>
-        <p class="text-xs text-amber-600 dark:text-amber-400 mb-1">Sedang Diproses</p>
-        <p class="text-2xl font-bold text-amber-700 dark:text-amber-300">{{ $stats['proses'] }}</p>
-    </div>
-    <div class="bg-green-50 dark:bg-green-900/20 rounded-xl border border-green-200 dark:border-green-800 p-4 flex flex-col items-center">
-        <span class="text-lg mb-1">🟢</span>
-        <p class="text-xs text-green-600 dark:text-green-400 mb-1">Selesai</p>
-        <p class="text-2xl font-bold text-green-700 dark:text-green-300">{{ $stats['selesai'] }}</p>
-    </div>
-</div>
-
-{{-- ── Legend & Filter Controls ────────────────────────────────────── --}}
-<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
-    {{-- Legend --}}
-    <div class="flex flex-wrap items-center gap-4 text-sm">
-        <span class="font-semibold text-gray-600 dark:text-gray-300">Keterangan:</span>
-        <span class="flex items-center gap-1.5">
-            <span class="inline-block w-4 h-4 rounded-full border-2 border-white shadow" style="background:#ef4444"></span>
-            <span class="text-gray-600 dark:text-gray-300">Belum Diproses</span>
-        </span>
-        <span class="flex items-center gap-1.5">
-            <span class="inline-block w-4 h-4 rounded-full border-2 border-white shadow" style="background:#f59e0b"></span>
-            <span class="text-gray-600 dark:text-gray-300">Sedang Diproses</span>
-        </span>
-        <span class="flex items-center gap-1.5">
-            <span class="inline-block w-4 h-4 rounded-full border-2 border-white shadow" style="background:#22c55e"></span>
-            <span class="text-gray-600 dark:text-gray-300">Selesai</span>
-        </span>
-    </div>
-
-    {{-- Filter Buttons --}}
-    <div class="flex flex-wrap items-center gap-2" id="filter-controls">
-        <label class="text-xs font-medium text-gray-500 dark:text-gray-400">Filter:</label>
-        <button onclick="filterMarkers('all')" id="btn-all"
-            class="filter-btn active-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all">
-            Semua
-        </button>
-        <button onclick="filterMarkers(0)" id="btn-0"
-            class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all">
-            Belum
-        </button>
-        <button onclick="filterMarkers(1)" id="btn-1"
-            class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all">
-            Proses
-        </button>
-        <button onclick="filterMarkers(2)" id="btn-2"
-            class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all">
-            Selesai
-        </button>
-        @if(auth()->user()?->hasAnyRole(['adminsapi', 'distribusisapi']))
-        <button onclick="filterMarkers('my')" id="btn-my"
-            class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
-            style="background:#3b82f6;color:#fff;">
-            &#128100; Tugasku
-        </button>
-        @endif
-    </div>
+{{-- ── Filter Controls (di atas peta) ──────────────────────────────── --}}
+<div class="flex flex-wrap items-center gap-2 mb-3" id="filter-controls">
+    <label class="text-xs font-medium text-gray-500 dark:text-gray-400">Filter:</label>
+    <button onclick="filterMarkers('all')" id="btn-all"
+        class="filter-btn active-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all">
+        Semua
+    </button>
+    <button onclick="filterMarkers(0)" id="btn-0"
+        class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all">
+        Belum
+    </button>
+    <button onclick="filterMarkers(1)" id="btn-1"
+        class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all">
+        Proses
+    </button>
+    <button onclick="filterMarkers(2)" id="btn-2"
+        class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all">
+        Selesai
+    </button>
+    @if(auth()->user()?->hasAnyRole(['adminsapi', 'distribusisapi']))
+    <button onclick="filterMarkers('my')" id="btn-my"
+        class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
+        style="background:#3b82f6;color:#fff;">
+        &#128100; Tugasku
+    </button>
+    @endif
 </div>
 
 {{-- ── Map Container ───────────────────────────────────────────────── --}}
@@ -140,9 +93,54 @@
     @endif
 </div>
 
-<p class="text-xs text-gray-400 dark:text-gray-500 mt-2 text-center sm:text-left">
+{{-- ── Info & Stats di bawah peta ─────────────────────────────────── --}}
+<p class="text-xs text-gray-400 dark:text-gray-500 mt-3 mb-4 text-center sm:text-left">
     Hanya sohibul dengan URL Google Maps yang ditampilkan ({{ count($markers) }} dari {{ $stats['total'] }}).
 </p>
+
+{{-- Stats Bar --}}
+<div class="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-4">
+    <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4 flex flex-col items-center">
+        <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Total Sohibul</p>
+        <p class="text-2xl font-bold text-gray-800 dark:text-white">{{ $stats['total'] }}</p>
+    </div>
+    <div class="bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800 p-4 flex flex-col items-center">
+        <p class="text-xs text-blue-600 dark:text-blue-400 mb-1">Ada Koordinat</p>
+        <p class="text-2xl font-bold text-blue-700 dark:text-blue-300">{{ $stats['mapped'] }}</p>
+    </div>
+    <div class="bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 flex flex-col items-center">
+        <span class="text-lg mb-1">&#9898;</span>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Belum Diproses</p>
+        <p class="text-2xl font-bold text-gray-700 dark:text-gray-200">{{ $stats['belum'] }}</p>
+    </div>
+    <div class="bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-200 dark:border-amber-800 p-4 flex flex-col items-center">
+        <span class="text-lg mb-1">&#128993;</span>
+        <p class="text-xs text-amber-600 dark:text-amber-400 mb-1">Sedang Diproses</p>
+        <p class="text-2xl font-bold text-amber-700 dark:text-amber-300">{{ $stats['proses'] }}</p>
+    </div>
+    <div class="bg-green-50 dark:bg-green-900/20 rounded-xl border border-green-200 dark:border-green-800 p-4 flex flex-col items-center">
+        <span class="text-lg mb-1">&#128994;</span>
+        <p class="text-xs text-green-600 dark:text-green-400 mb-1">Selesai</p>
+        <p class="text-2xl font-bold text-green-700 dark:text-green-300">{{ $stats['selesai'] }}</p>
+    </div>
+</div>
+
+{{-- Legend / Keterangan --}}
+<div class="flex flex-wrap items-center gap-4 text-sm px-1">
+    <span class="font-semibold text-gray-600 dark:text-gray-300">Keterangan warna marker:</span>
+    <span class="flex items-center gap-1.5">
+        <span class="inline-block w-4 h-4 rounded-full border-2 border-white shadow" style="background:#ef4444"></span>
+        <span class="text-gray-600 dark:text-gray-300">Belum Diproses</span>
+    </span>
+    <span class="flex items-center gap-1.5">
+        <span class="inline-block w-4 h-4 rounded-full border-2 border-white shadow" style="background:#f59e0b"></span>
+        <span class="text-gray-600 dark:text-gray-300">Sedang Diproses</span>
+    </span>
+    <span class="flex items-center gap-1.5">
+        <span class="inline-block w-4 h-4 rounded-full border-2 border-white shadow" style="background:#22c55e"></span>
+        <span class="text-gray-600 dark:text-gray-300">Selesai</span>
+    </span>
+</div>
 
 {{-- ── Styles ──────────────────────────────────────────────────────── --}}
 <style>
