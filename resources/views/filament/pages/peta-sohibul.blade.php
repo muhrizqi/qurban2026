@@ -671,10 +671,15 @@ document.addEventListener('DOMContentLoaded', function () {
         map.fitBounds(group.getBounds().pad(0.15));
     }
 
+    // PENTING: activeFilter harus dideklarasikan SEBELUM updateBadge() dipanggil.
+    // Karena let tidak di-hoist (Temporal Dead Zone), jika updateBadge()
+    // dipanggil sebelum baris ini, akan terjadi ReferenceError yang menghentikan
+    // seluruh inisialisasi berikutnya — termasuk window.filterMarkers.
+    let activeFilter = 'all';
+
     updateBadge();
 
     // ── Filter markers ────────────────────────────────────────
-    let activeFilter = 'all';
 
     window.filterMarkers = function (status) {
         activeFilter = status;
