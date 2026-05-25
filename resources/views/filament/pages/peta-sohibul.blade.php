@@ -54,7 +54,7 @@
     </div>
 
     {{-- Filter Buttons --}}
-    <div class="flex items-center gap-2" id="filter-controls">
+    <div class="flex flex-wrap items-center gap-2" id="filter-controls">
         <label class="text-xs font-medium text-gray-500 dark:text-gray-400">Filter:</label>
         <button onclick="filterMarkers('all')" id="btn-all"
             class="filter-btn active-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all">
@@ -72,6 +72,13 @@
             class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all">
             Selesai
         </button>
+        @if(auth()->user()?->hasAnyRole(['adminsapi', 'distribusisapi']))
+        <button onclick="filterMarkers('my')" id="btn-my"
+            class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
+            style="background:#3b82f6;color:#fff;">
+            &#128100; Tugasku
+        </button>
+        @endif
     </div>
 </div>
 
@@ -438,11 +445,24 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ── Popup HTML factory ────────────────────────────────────────
-    const isPetugas = {{ auth()->user()?->hasAnyRole(['adminsapi', 'distribusisapi']) ? 'true' : 'false' }};
+    const isPetugas     = {{ auth()->user()?->hasAnyRole(['adminsapi', 'distribusisapi']) ? 'true' : 'false' }};
+    const currentUserId = {{ auth()->id() ?? 'null' }};
 
     window.confirmAntarkan = function(id, nama) {
         if (confirm(`Apakah Anda yakin mau mengantarkan daging untuk sohibul ${nama}?`)) {
             @this.call('antarkanSohibul', id);
+        }
+    };
+
+    window.confirmSelesaikan = function(id, nama) {
+        if (confirm(`Konfirmasi: daging untuk ${nama} sudah berhasil diantarkan?`)) {
+            @this.call('selesaikanSohibul', id);
+        }
+    };
+
+    window.confirmBatalkan = function(id, nama) {
+        if (confirm(`Batalkan tugas pengantaran untuk ${nama}?\nStatus akan kembali ke Belum Terkirim.`)) {
+            @this.call('batalkanSohibul', id);
         }
     };
 
@@ -459,6 +479,14 @@ document.addEventListener('DOMContentLoaded', function () {
             : '';
 
         // Tampilkan nama PJ hanya saat status Dalam Proses (1) atau Selesai (2)
+        const selesaikanBtn = (isPetugas && d.status === 1 && d.pj_id === currentUserId)
+            ? '<button onclick="confirmSelesaikan(' + d.id + ', \'' + d.nama.replace(/\'/g, "\\\'") + '\')" style="background:#2563eb;color:#fff;padding:6px 12px;border-radius:6px;border:none;cursor:pointer;font-size:12px;font-weight:bold;width:100%;margin-top:8px;display:flex;justify-content:center;align-items:center;gap:6px;">&#9989; Selesai Diantarkan</button>'
+            : '';
+
+        const batalkanBtn = (isPetugas && (d.status === 1 || d.status === 2) && d.pj_id === currentUserId)
+            ? '<button onclick="confirmBatalkan(' + d.id + ', \'' + d.nama.replace(/\'/g, "\\\'") + '\')" style="background:#ef4444;color:#fff;padding:6px 12px;border-radius:6px;border:none;cursor:pointer;font-size:12px;font-weight:bold;width:100%;margin-top:8px;display:flex;justify-content:center;align-items:center;gap:6px;">&#8617; Batalkan Tugas</button>'
+            : '';
+
         const pjRow = (d.status >= 1 && d.pj_nama)
             ? `<span class="popup-label">Petugas</span>
                <span style="font-weight:600;color:#1d4ed8">&#128100; ${d.pj_nama}</span>`
@@ -491,7 +519,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 ${waLink}
                 ${mapsLink}
             </div>
-            ${antarkanBtn}
+            ${antarkanBtn}${selesaikanBtn}${batalkanBtn}
         </div>`;
     }
 
@@ -692,6 +720,8 @@ document.addEventListener('DOMContentLoaded', function () {
         allGroups.forEach(g => {
             const visible = status === 'all'
                 ? g.items
+                : status === 'my'
+                ? g.items.filter(d => d.pj_id === currentUserId)
                 : g.items.filter(d => d.status === status);
 
             if (visible.length > 0) {
@@ -721,12 +751,14 @@ document.addEventListener('DOMContentLoaded', function () {
             if (map.hasLayer(g.marker)) {
                 const vis = activeFilter === 'all'
                     ? g.items.length
+                    : activeFilter === 'my'
+                    ? g.items.filter(d => d.pj_id === currentUserId).length
                     : g.items.filter(d => d.status === activeFilter).length;
                 visible += vis;
             }
         });
         const badge = document.getElementById('marker-count-badge');
-        if (badge) badge.textContent = `📍 ${visible} dari ${total} sohibul ditampilkan`;
+        if (badge) badge.textContent = `&#128205; ${visible} dari ${total} sohibul ditampilkan`;
     }
 
     // ── Listen to Livewire Event for Marker Update ───────────────
@@ -734,8 +766,9 @@ document.addEventListener('DOMContentLoaded', function () {
         const detail    = event.detail[0] || event.detail;
         const id        = detail.id;
         const newStatus = detail.status;
-        // pj_nama dikirim dari antarkanSohibul() saat petugas mengambil tugas
-        const newPjNama = detail.pj_nama ?? null;
+        // pj_id & pj_nama dikirim dari semua action (antarkan/selesaikan/batalkan)
+        const newPjId   = Object.prototype.hasOwnProperty.call(detail, 'pj_id')   ? detail.pj_id   : undefined;
+        const newPjNama = Object.prototype.hasOwnProperty.call(detail, 'pj_nama') ? detail.pj_nama : undefined;
 
         // Temukan grup yang mengandung item dengan id ini
         for (const g of allGroups) {
@@ -743,20 +776,29 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!item) continue;
 
             item.status      = newStatus;
-            item.statusLabel = STATUS[newStatus].label;
-            if (newPjNama) item.pj_nama = newPjNama; // simpan nama petugas
+            item.statusLabel = STATUS[newStatus]?.label ?? item.statusLabel;
+            if (newPjId   !== undefined) item.pj_id   = newPjId;
+            if (newPjNama !== undefined) item.pj_nama = newPjNama;
+
+            // Logika visible berdasarkan activeFilter
+            const visibleForFilter = (d) =>
+                activeFilter === 'all'  ? true
+                : activeFilter === 'my' ? d.pj_id === currentUserId
+                : d.status === activeFilter;
 
             if (!g.isCluster) {
                 // Marker tunggal: update ikon & popup langsung
                 g.marker.setIcon(makeIcon(newStatus));
                 g.marker.setPopupContent(makePopup(item));
+                // Sembunyikan jika tidak sesuai filter aktif
+                if (!visibleForFilter(item)) map.removeLayer(g.marker);
+                else if (!map.hasLayer(g.marker)) map.addLayer(g.marker);
             } else {
                 // Cluster: update ikon berdasarkan item yang terlihat saat ini
-                const vis = activeFilter === 'all'
-                    ? g.items
-                    : g.items.filter(d => d.status === activeFilter);
+                const vis = g.items.filter(visibleForFilter);
                 if (vis.length > 0) {
                     g.marker.setIcon(makeClusterIcon(vis.length, dominantStatus(vis)));
+                    if (!map.hasLayer(g.marker)) map.addLayer(g.marker);
                 } else {
                     map.removeLayer(g.marker);
                 }
@@ -773,7 +815,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             }
 
-            if (activeFilter !== 'all') filterMarkers(activeFilter);
+            updateBadge();
             break;
         }
     });

@@ -49,6 +49,7 @@ class PetaSohibulPage extends Page
                     'status'   => (int) $s->status,
                     'statusLabel' => SohibulSapi::STATUS_LABEL[$s->status] ?? '-',
                     'pj_nama'  => $s->penanggungJawab?->name ?? null, // nama petugas PJ
+                    'pj_id'    => $s->pj,                             // id petugas PJ
                     'urlmap'   => $s->urlmap,
                 ];
             })
@@ -113,15 +114,59 @@ class PetaSohibulPage extends Page
                 'pj'     => $user->id,
                 'status' => 1,
             ]);
-            
+
             \Filament\Notifications\Notification::make()
                 ->success()
                 ->title('Tugas Berhasil Diambil!')
                 ->body('Anda ditugaskan mengantarkan daging untuk ' . $sohibul->nama)
                 ->send();
 
-            // Sertakan pj_nama agar marker di peta langsung update tanpa reload
-            $this->dispatch('marker-updated', id: $id, status: 1, pj_nama: $user->name);
+            $this->dispatch('marker-updated', id: $id, status: 1, pj_id: $user->id, pj_nama: $user->name);
+        }
+    }
+
+    public function selesaikanSohibul($id)
+    {
+        $user = auth()->user();
+        if (! $user?->hasAnyRole(['adminsapi', 'distribusisapi'])) {
+            return;
+        }
+
+        $sohibul = SohibulSapi::find($id);
+        if ($sohibul && $sohibul->status === 1 && $sohibul->pj === $user->id) {
+            $sohibul->update(['status' => 2]);
+
+            \Filament\Notifications\Notification::make()
+                ->success()
+                ->title('Pengantaran Selesai!')
+                ->body('Daging untuk ' . $sohibul->nama . ' berhasil diantarkan.')
+                ->send();
+
+            $this->dispatch('marker-updated', id: $id, status: 2, pj_id: $user->id, pj_nama: $user->name);
+        }
+    }
+
+    public function batalkanSohibul($id)
+    {
+        $user = auth()->user();
+        if (! $user?->hasAnyRole(['adminsapi', 'distribusisapi'])) {
+            return;
+        }
+
+        $sohibul = SohibulSapi::find($id);
+        if ($sohibul && in_array($sohibul->status, [1, 2]) && $sohibul->pj === $user->id) {
+            $sohibul->update([
+                'pj'     => null,
+                'status' => 0,
+            ]);
+
+            \Filament\Notifications\Notification::make()
+                ->warning()
+                ->title('Tugas Dibatalkan')
+                ->body('Tugas pengantaran untuk ' . $sohibul->nama . ' telah dibatalkan.')
+                ->send();
+
+            $this->dispatch('marker-updated', id: $id, status: 0, pj_id: null, pj_nama: null);
         }
     }
 }
