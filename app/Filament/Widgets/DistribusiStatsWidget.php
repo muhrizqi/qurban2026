@@ -9,7 +9,7 @@ class DistribusiStatsWidget extends Widget
 {
     protected static bool $isDiscovered = true;
     protected static ?int $sort = -1;
-    protected static string $view = 'filament.widgets.distribusi-stats-widget';
+    protected string $view = 'filament.widgets.distribusi-stats-widget';
     protected int|string|array $columnSpan = 'full';
 
     public static function canView(): bool
