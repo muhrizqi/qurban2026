@@ -237,6 +237,9 @@
     justify-content: space-between;
     background: #f9fafb;
     padding: 8px 12px;
+    /* padding-right lebih besar agar tombol › tidak berdesakan
+       dengan tombol × Leaflet yang ada di sudut kanan atas popup */
+    padding-right: 40px;
     border-bottom: 1px solid #e5e7eb;
     gap: 8px;
 }
@@ -290,6 +293,31 @@
 .cluster-nav-dot.active {
     background: #1f2937;
     transform: scale(1.25);
+}
+
+/* ── Leaflet close button: lebih rapi, bulat, terpisah dari nav ──────
+   Default Leaflet menempatkan × di top:0, right:0 tanpa background.
+   Kita perbaiki agar terlihat jelas sebagai tombol tersendiri. */
+.leaflet-popup-close-button {
+    top: 7px !important;
+    right: 7px !important;
+    width: 24px !important;
+    height: 24px !important;
+    font-size: 16px !important;
+    line-height: 24px !important;
+    text-align: center !important;
+    color: #6b7280 !important;
+    background: #fff !important;
+    border-radius: 50% !important;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.15) !important;
+    padding: 0 !important;
+    border: 1px solid #e5e7eb !important;
+    transition: background 0.15s, color 0.15s !important;
+    z-index: 1010 !important;
+}
+.leaflet-popup-close-button:hover {
+    background: #f3f4f6 !important;
+    color: #111827 !important;
 }
 
 
