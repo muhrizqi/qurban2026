@@ -1,4 +1,4 @@
-﻿<x-filament-panels::page>
+<x-filament-panels::page>
 
 @php
     $markers = $this->getMarkers();
@@ -665,18 +665,10 @@ document.addEventListener('DOMContentLoaded', function () {
             // (a) setContent langsung ter-render, dan
             // (b) disableClickPropagation bisa dipasang ke _contentNode.
             marker.on('popupopen', function () {
-                // Filter items sesuai filter aktif agar popup cluster hanya
-                // menampilkan item yang relevan (mis. hanya tugas saya di filter Tugasku)
-                const filteredItems = activeFilter === 'all'
-                    ? items
-                    : activeFilter === 'my'
-                    ? items.filter(d => d.pj_id === currentUserId)
-                    : items.filter(d => d.status === activeFilter);
-
-                _clusterItems = filteredItems;
+                _clusterItems = items;
                 _clusterIdx   = 0;
                 _clusterPopup = this.getPopup();
-                _clusterPopup.setContent(makeClusterPopupHtml(filteredItems, 0));
+                _clusterPopup.setContent(makeClusterPopupHtml(items, 0));
                 // Pasang proteksi: klik di dalam popup tidak merambat ke peta
                 stopPopupClickProp();
             });
