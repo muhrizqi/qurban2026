@@ -79,7 +79,8 @@ class DistribusiSapiResource extends Resource
             'rw11'    => Pages\ListDistribusiRW11::route('/rw11'),
             'rw12'    => Pages\ListDistribusiRW12::route('/rw12'),
             'luar'    => Pages\ListDistribusiLuar::route('/luar'),
-            'tidak_diambil' => Pages\ListDistribusiTidakDiambil::route('/tidak-diambil'),
+            'tidak_diambil'   => Pages\ListDistribusiTidakDiambil::route('/tidak-diambil'),
+            'diambil_sendiri' => Pages\ListDistribusiDiambilSendiri::route('/diambil-sendiri'),
         ];
     }
 }
