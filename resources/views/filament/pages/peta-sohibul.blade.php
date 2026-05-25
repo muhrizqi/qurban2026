@@ -230,6 +230,68 @@
     text-decoration: none;
 }
 
+/* ── Cluster Carousel Popup Nav ────────────────────────────────────── */
+.cluster-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #f9fafb;
+    padding: 8px 12px;
+    border-bottom: 1px solid #e5e7eb;
+    gap: 8px;
+}
+.cluster-nav-btn {
+    background: #1f2937;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    width: 30px;
+    height: 30px;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, transform 0.1s;
+    flex-shrink: 0;
+}
+.cluster-nav-btn:hover   { background: #374151; }
+.cluster-nav-btn:active  { transform: scale(0.93); }
+.cluster-nav-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    gap: 4px;
+}
+.cluster-nav-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #374151;
+    white-space: nowrap;
+}
+.cluster-nav-dots {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 120px;
+}
+.cluster-nav-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #d1d5db;
+    transition: background 0.2s, transform 0.2s;
+    cursor: pointer;
+}
+.cluster-nav-dot.active {
+    background: #1f2937;
+    transform: scale(1.25);
+}
+
 
 </style>
 
@@ -398,23 +460,151 @@ document.addEventListener('DOMContentLoaded', function () {
         </div>`;
     }
 
-    // ── Buat markers ──────────────────────────────────────────────
-    const allMarkers = RAW_MARKERS.map(d => {
-        const marker = L.marker([d.lat, d.lng], { icon: makeIcon(d.status), title: `[${d.no}] ${d.nama}` })
-            .addTo(map)
-            .bindPopup(makePopup(d), { maxWidth: 300, minWidth: 240 });
-        return { marker, data: d };
+    // ── Cluster configuration ────────────────────────────────
+    // Markers yang berjarak < CLUSTER_DISTANCE derajat (~11 meter)
+    // dikelompokkan menjadi satu marker cluster dengan popup carousel.
+    const CLUSTER_DISTANCE = 0.0001;
+
+    function isClose(a, b) {
+        return Math.abs(a.lat - b.lat) < CLUSTER_DISTANCE
+            && Math.abs(a.lng - b.lng) < CLUSTER_DISTANCE;
+    }
+
+    // Tentukan status dominan grup: prioritas belum (0) > proses (1) > selesai (2)
+    function dominantStatus(items) {
+        if (items.some(m => m.status === 0)) return 0;
+        if (items.some(m => m.status === 1)) return 1;
+        return 2;
+    }
+
+    // Kelompokkan RAW_MARKERS berdasarkan kedekatan
+    function buildGroups(markers) {
+        const groups = [];
+        const used   = new Set();
+        markers.forEach((m, i) => {
+            if (used.has(i)) return;
+            const g = [m];
+            used.add(i);
+            markers.forEach((m2, j) => {
+                if (j !== i && !used.has(j) && isClose(m, m2)) {
+                    g.push(m2);
+                    used.add(j);
+                }
+            });
+            groups.push(g);
+        });
+        return groups;
+    }
+
+    // ── Cluster icon factory ─────────────────────────────────
+    function makeClusterIcon(count, statusCode) {
+        const s = STATUS[statusCode] ?? STATUS[0];
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="42" height="54" viewBox="0 0 42 54">
+            <path d="M21 0C12.72 0 6 6.72 6 15c0 11.25 15 39 15 39S36 26.25 36 15C36 6.72 29.28 0 21 0z"
+                  fill="${s.color}" stroke="${s.border}" stroke-width="2"/>
+            <circle cx="21" cy="15" r="11" fill="white" opacity="0.95"/>
+            <text x="21" y="20" text-anchor="middle"
+                  font-family="system-ui,sans-serif" font-size="12"
+                  font-weight="bold" fill="${s.color}">${count}</text>
+        </svg>`;
+        return L.icon({
+            iconUrl    : 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg),
+            iconSize   : [42, 54],
+            iconAnchor : [21, 54],
+            popupAnchor: [0, -52],
+        });
+    }
+
+    // ── Cluster carousel state & navigation ───────────────────
+    let _clusterItems  = [];   // items yang sedang ditampilkan di carousel
+    let _clusterIdx    = 0;    // index aktif
+    let _clusterPopup  = null; // referensi L.Popup yang sedang terbuka
+
+    window.navigateCluster = function (dir) {
+        _clusterIdx = (_clusterIdx + dir + _clusterItems.length) % _clusterItems.length;
+        if (_clusterPopup) {
+            _clusterPopup.setContent(makeClusterPopupHtml(_clusterItems, _clusterIdx));
+        }
+    };
+
+    window.jumpCluster = function (idx) {
+        _clusterIdx = idx;
+        if (_clusterPopup) {
+            _clusterPopup.setContent(makeClusterPopupHtml(_clusterItems, _clusterIdx));
+        }
+    };
+
+    // HTML nav bar untuk cluster popup
+    function makeClusterPopupHtml(items, idx) {
+        const total = items.length;
+        const dotsHtml = items.map((_, i) =>
+            `<span class="cluster-nav-dot${i === idx ? ' active' : ''}" onclick="jumpCluster(${i})" title="Sohibul ${i+1}"></span>`
+        ).join('');
+        const nav = `
+            <div class="cluster-nav">
+                <button class="cluster-nav-btn" onclick="navigateCluster(-1)" title="Sebelumnya">&#8249;</button>
+                <div class="cluster-nav-center">
+                    <span class="cluster-nav-label">📍 ${idx + 1} dari ${total} sohibul</span>
+                    <div class="cluster-nav-dots">${dotsHtml}</div>
+                </div>
+                <button class="cluster-nav-btn" onclick="navigateCluster(1)" title="Berikutnya">&#8250;</button>
+            </div>`;
+        return nav + makePopup(items[idx]);
+    }
+
+    // ── Buat marker groups ────────────────────────────────────
+    const rawGroups = buildGroups(RAW_MARKERS);
+
+    // allGroups: [ { marker, items: [...], isCluster } ]
+    const allGroups = rawGroups.map(items => {
+        const isCluster = items.length > 1;
+
+        // Posisi representatif: rata-rata centroid
+        const lat = items.reduce((s, m) => s + m.lat, 0) / items.length;
+        const lng = items.reduce((s, m) => s + m.lng, 0) / items.length;
+
+        const icon  = isCluster
+            ? makeClusterIcon(items.length, dominantStatus(items))
+            : makeIcon(items[0].status);
+        const title = isCluster
+            ? `${items.length} sohibul di lokasi ini`
+            : `[${items[0].no}] ${items[0].nama}`;
+
+        const marker = L.marker([lat, lng], { icon, title, zIndexOffset: isCluster ? 100 : 0 })
+            .addTo(map);
+
+        if (isCluster) {
+            marker.bindPopup('', { maxWidth: 320, minWidth: 260 });
+            marker.on('click', function () {
+                _clusterItems = items;
+                _clusterIdx   = 0;
+                _clusterPopup = this.getPopup();
+                _clusterPopup.setContent(makeClusterPopupHtml(items, 0));
+            });
+            // Tutup state saat popup ditutup
+            marker.on('popupclose', function () {
+                _clusterPopup = null;
+            });
+        } else {
+            marker.bindPopup(makePopup(items[0]), { maxWidth: 300, minWidth: 240 });
+        }
+
+        return { marker, items, isCluster };
     });
 
-    // ── Auto fit bounds ───────────────────────────────────────────
-    if (allMarkers.length > 0) {
-        const group = L.featureGroup(allMarkers.map(m => m.marker));
+    // Flat list untuk iterasi per-item (digunakan badge & marker-updated)
+    // Catatan: marker bisa dishare antar item di grup yang sama
+    const allMarkers = allGroups.flatMap(g => g.items.map(d => ({ group: g, data: d })));
+
+    // ── Auto fit bounds ──────────────────────────────────────
+    if (allGroups.length > 0) {
+        const group = L.featureGroup(allGroups.map(g => g.marker));
         map.fitBounds(group.getBounds().pad(0.15));
     }
 
     updateBadge();
 
-    // ── Filter markers ────────────────────────────────────────────
+    // ── Filter markers ────────────────────────────────────────
     let activeFilter = 'all';
 
     window.filterMarkers = function (status) {
@@ -425,13 +615,25 @@ document.addEventListener('DOMContentLoaded', function () {
         const activeBtn = document.getElementById('btn-' + status);
         if (activeBtn) activeBtn.classList.add('active-filter-btn');
 
-        // Show/hide markers
-        allMarkers.forEach(({ marker, data }) => {
-            const show = status === 'all' || data.status === status;
-            if (show) {
-                if (!map.hasLayer(marker)) map.addLayer(marker);
+        allGroups.forEach(g => {
+            const visible = status === 'all'
+                ? g.items
+                : g.items.filter(d => d.status === status);
+
+            if (visible.length > 0) {
+                if (!map.hasLayer(g.marker)) map.addLayer(g.marker);
+                // Update ikon cluster agar mencerminkan jumlah & status terfilter
+                if (g.isCluster) {
+                    g.marker.setIcon(makeClusterIcon(visible.length, dominantStatus(visible)));
+                    // Jika popup cluster ini sedang terbuka, perbarui isinya
+                    if (_clusterPopup && g.marker.getPopup() === _clusterPopup) {
+                        _clusterItems = visible;
+                        _clusterIdx   = Math.min(_clusterIdx, visible.length - 1);
+                        _clusterPopup.setContent(makeClusterPopupHtml(visible, _clusterIdx));
+                    }
+                }
             } else {
-                if (map.hasLayer(marker)) map.removeLayer(marker);
+                if (map.hasLayer(g.marker)) map.removeLayer(g.marker);
             }
         });
 
@@ -439,31 +641,62 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     function updateBadge() {
-        const visible = allMarkers.filter(({ marker }) => map.hasLayer(marker)).length;
-        const badge   = document.getElementById('marker-count-badge');
-        if (badge) badge.textContent = `📍 ${visible} dari ${allMarkers.length} sohibul ditampilkan`;
+        let visible = 0;
+        const total = allMarkers.length;
+        allGroups.forEach(g => {
+            if (map.hasLayer(g.marker)) {
+                const vis = activeFilter === 'all'
+                    ? g.items.length
+                    : g.items.filter(d => d.status === activeFilter).length;
+                visible += vis;
+            }
+        });
+        const badge = document.getElementById('marker-count-badge');
+        if (badge) badge.textContent = `📍 ${visible} dari ${total} sohibul ditampilkan`;
     }
 
-    // ── Listen to Livewire Event for Marker Update ────────────────
+    // ── Listen to Livewire Event for Marker Update ───────────────
     window.addEventListener('marker-updated', (event) => {
-        const detail = event.detail[0] || event.detail; // Handle different Livewire versions
-        const id = detail.id;
+        const detail    = event.detail[0] || event.detail;
+        const id        = detail.id;
         const newStatus = detail.status;
-        
-        const item = allMarkers.find(m => m.data.id === id);
-        if (item) {
-            item.data.status = newStatus;
-            item.data.statusLabel = STATUS[newStatus].label;
-            
-            // Update the map marker icon
-            item.marker.setIcon(makeIcon(newStatus));
-            // Update the popup content
-            item.marker.setPopupContent(makePopup(item.data));
-            
-            // Reapply filter so if we are viewing "Belum Diproses", it disappears
-            if (activeFilter !== 'all') {
-                filterMarkers(activeFilter);
+
+        // Temukan grup yang mengandung item dengan id ini
+        for (const g of allGroups) {
+            const item = g.items.find(d => d.id === id);
+            if (!item) continue;
+
+            item.status      = newStatus;
+            item.statusLabel = STATUS[newStatus].label;
+
+            if (!g.isCluster) {
+                // Marker tunggal: update ikon & popup langsung
+                g.marker.setIcon(makeIcon(newStatus));
+                g.marker.setPopupContent(makePopup(item));
+            } else {
+                // Cluster: update ikon berdasarkan item yang terlihat saat ini
+                const vis = activeFilter === 'all'
+                    ? g.items
+                    : g.items.filter(d => d.status === activeFilter);
+                if (vis.length > 0) {
+                    g.marker.setIcon(makeClusterIcon(vis.length, dominantStatus(vis)));
+                } else {
+                    map.removeLayer(g.marker);
+                }
+                // Jika popup cluster sedang terbuka, perbarui kontennya
+                if (_clusterPopup && g.marker.getPopup() === _clusterPopup) {
+                    _clusterItems = vis;
+                    _clusterIdx   = Math.min(_clusterIdx, Math.max(0, vis.length - 1));
+                    if (vis.length > 0) {
+                        _clusterPopup.setContent(makeClusterPopupHtml(vis, _clusterIdx));
+                    } else {
+                        g.marker.closePopup();
+                    }
+                }
             }
+
+            if (activeFilter !== 'all') filterMarkers(activeFilter);
+            break;
         }
     });
 
