@@ -38,15 +38,6 @@
 {{-- ── Map Container ───────────────────────────────────────────────── --}}
 <div id="sohibul-map-wrapper" wire:ignore class="relative rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-lg" style="height:600px;">
 
-    {{-- Marker Count Badge --}}
-    <div id="marker-count-badge"
-         style="position:absolute;top:12px;left:12px;z-index:1000;
-                background:rgba(255,255,255,0.93);border:1px solid #e5e7eb;
-                border-radius:10px;padding:6px 12px;font-size:12px;
-                font-weight:600;color:#374151;box-shadow:0 1px 6px rgba(0,0,0,0.12);">
-        📍 Memuat peta...
-    </div>
-
     @if (empty($apiKey))
         {{-- ── Tanpa API Key: fallback list ── --}}
         <div class="flex flex-col items-center justify-center h-full bg-gray-100 dark:bg-gray-800 gap-4 p-6">
@@ -94,7 +85,13 @@
 </div>
 
 {{-- ── Info & Stats di bawah peta ─────────────────────────────────── --}}
-<p class="text-xs text-gray-400 dark:text-gray-500 mt-3 mb-4 text-center sm:text-left">
+{{-- Badge jumlah marker yang tampil --}}
+<p id="marker-count-badge"
+   class="text-xs font-semibold text-gray-500 dark:text-gray-400 mt-2 mb-1">
+    📍 Memuat peta...
+</p>
+
+<p class="text-xs text-gray-400 dark:text-gray-500 mb-4 text-center sm:text-left">
     Hanya sohibul dengan URL Google Maps yang ditampilkan ({{ count($markers) }} dari {{ $stats['total'] }}).
 </p>
 
@@ -756,7 +753,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
         const badge = document.getElementById('marker-count-badge');
-        if (badge) badge.textContent = `&#128205; ${visible} dari ${total} sohibul ditampilkan`;
+        if (badge) badge.innerHTML = `📍 <strong>${visible}</strong> dari <strong>${total}</strong> sohibul ditampilkan`;
     }
 
     // ── Listen to Livewire Event for Marker Update ───────────────
