@@ -295,8 +295,7 @@ class SohibulSapiResource extends Resource
             Textarea::make('keterangan')
                 ->label('Keterangan')
                 ->rows(2)
-                ->nullable()
-                ->disabled($isPetugasMap),
+                ->nullable(),
         ]);
     }
 
