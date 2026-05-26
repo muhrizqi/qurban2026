@@ -1052,6 +1052,8 @@
                 lblStart.textContent = timeline[0].formatted_clock;
                 lblEnd.textContent = timeline[timeline.length - 1].formatted_clock;
 
+                let currentLogTheme = null;
+
                 // Update UI state
                 function renderState(idx) {
                     const entry = timeline[idx];
@@ -1062,6 +1064,12 @@
 
                     // Update slider
                     slider.value = idx;
+
+                    // If the logged theme changes during playback, clear local override
+                    if (currentLogTheme !== null && currentLogTheme !== data.theme) {
+                        localStorage.removeItem('progress-theme-override');
+                    }
+                    currentLogTheme = data.theme;
 
                     // Update theme mode (light/dark) dynamically ONLY if no local preference override exists
                     if (!localStorage.getItem('progress-theme-override')) {

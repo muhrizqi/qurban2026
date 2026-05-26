@@ -840,11 +840,18 @@
 
         // Live Polling Logic
         let lastUpdated = '';
+        let currentAdminTheme = null;
 
         function pollData() {
             fetch('/progressreport/data')
                 .then(response => response.json())
                 .then(data => {
+                    // If the admin theme changed in the database, clear the local override
+                    if (currentAdminTheme !== null && currentAdminTheme !== data.theme) {
+                        localStorage.removeItem('progress-theme-override');
+                    }
+                    currentAdminTheme = data.theme;
+
                     // Update theme mode (light/dark) dynamically ONLY if no local preference override exists
                     if (!localStorage.getItem('progress-theme-override')) {
                         const body = document.body;
