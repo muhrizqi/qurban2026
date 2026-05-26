@@ -50,28 +50,29 @@ class ProgressReportController extends Controller
      */
     public function playback()
     {
+        $state = ProgressState::getSingle();
         $logs = ProgressLog::orderBy('created_at', 'asc')->get()->map(function ($log) {
             $formattedTime = function ($time) {
                 if (!$time) return '-';
                 return \Carbon\Carbon::parse($time)->timezone('Asia/Jakarta')->format('H:i:s');
             };
 
-            $state = $log->state;
-            foreach ($state as $key => $value) {
+            $logState = $log->state;
+            foreach ($logState as $key => $value) {
                 if (str_ends_with($key, '_time')) {
-                    $state[$key . '_formatted'] = $formattedTime($value);
+                    $logState[$key . '_formatted'] = $formattedTime($value);
                 }
             }
 
             return [
                 'id' => $log->id,
                 'created_at' => $log->created_at->timezone('Asia/Jakarta')->format('Y-m-d H:i:s'),
-                'time_formatted' => $log->created_at->timezone('Asia/Jakarta')->format('H:i:s'),
+                'time_formatted' => $log->created_at->timezone('Asia/Jakarta')->format('H:i'),
                 'minute_key' => $log->created_at->timezone('Asia/Jakarta')->format('H:i'), // for minute-by-minute playback
-                'state' => $state
+                'state' => $logState
             ];
         });
 
-        return view('progress-playback', compact('logs'));
+        return view('progress-playback', compact('logs', 'state'));
     }
 }
