@@ -202,6 +202,30 @@
             gap: 8px;
             margin-bottom: 10px;
         }
+        /* Prominent block title bar */
+        .pa-block-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            padding: 8px 12px;
+            border-radius: 10px;
+            background: linear-gradient(90deg, rgba(0,0,0,0.04), transparent);
+            border-left: 4px solid currentColor;
+        }
+        .dark .pa-block-title {
+            background: linear-gradient(90deg, rgba(255,255,255,0.05), transparent);
+        }
+        .pa-block-title-text {
+            font-size: 14px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            line-height: 1.2;
+        }
+        .pa-block-title .pa-badge {
+            margin-left: auto;
+        }
         .pa-divider {
             width: 100%;
             height: 1px;
@@ -292,9 +316,9 @@
                     {{-- BLOCK 1: PENYEMBELIHAN --}}
                     <div style="border-right:1px solid #e2e8f0;" class="dark:border-gray-700">
                         <div class="pa-inner-wrap">
-                            <div class="pa-section-label">
-                                <span class="w-2.5 h-2.5 rounded-full inline-block {{ $c1['dot'] }}"></span>
-                                <span class="font-extrabold text-xs {{ $c1['text'] }} uppercase tracking-wider">1. Penyembelihan</span>
+                            <div class="pa-block-title {{ $c1['text'] }}" style="border-left-color:currentColor;">
+                                <span class="w-3 h-3 rounded-full inline-block flex-shrink-0 {{ $c1['dot'] }}"></span>
+                                <span class="pa-block-title-text">1. Penyembelihan</span>
                                 <span class="pa-badge" style="{{ $c1['badge'] }}">{{ ucfirst($color_block_1) }}</span>
                             </div>
                             <div style="display:flex;gap:6px;align-items:center;margin-bottom:10px;">
@@ -329,9 +353,9 @@
                     {{-- BLOCK 2: PENGELETAN --}}
                     <div style="border-right:1px solid #e2e8f0;" class="dark:border-gray-700">
                         <div class="pa-inner-wrap">
-                            <div class="pa-section-label">
-                                <span class="w-2.5 h-2.5 rounded-full inline-block {{ $c2['dot'] }}"></span>
-                                <span class="font-extrabold text-xs {{ $c2['text'] }} uppercase tracking-wider">2. Pengeletan</span>
+                            <div class="pa-block-title {{ $c2['text'] }}" style="border-left-color:currentColor;">
+                                <span class="w-3 h-3 rounded-full inline-block flex-shrink-0 {{ $c2['dot'] }}"></span>
+                                <span class="pa-block-title-text">2. Pengeletan</span>
                                 <span class="pa-badge" style="{{ $c2['badge'] }}">{{ ucfirst($color_block_2) }}</span>
                             </div>
                             <div style="display:flex;gap:6px;align-items:center;margin-bottom:10px;">
@@ -366,9 +390,9 @@
                     {{-- BLOCK 3: PENIMBANGAN --}}
                     <div>
                         <div class="pa-inner-wrap">
-                            <div class="pa-section-label">
-                                <span class="w-2.5 h-2.5 rounded-full inline-block {{ $c3['dot'] }}"></span>
-                                <span class="font-extrabold text-xs {{ $c3['text'] }} uppercase tracking-wider">3. Penimbangan</span>
+                            <div class="pa-block-title {{ $c3['text'] }}" style="border-left-color:currentColor;">
+                                <span class="w-3 h-3 rounded-full inline-block flex-shrink-0 {{ $c3['dot'] }}"></span>
+                                <span class="pa-block-title-text">3. Penimbangan</span>
                                 <span class="pa-badge" style="{{ $c3['badge'] }}">{{ ucfirst($color_block_3) }}</span>
                             </div>
                             <div style="display:flex;gap:6px;align-items:center;margin-bottom:10px;">
@@ -420,9 +444,9 @@
                     {{-- BLOCK 4: SOHIBUL QURBAN SAPI --}}
                     <div style="border-right:1px solid #e2e8f0;" class="dark:border-gray-700">
                         <div class="pa-inner-wrap">
-                            <div class="pa-section-label">
-                                <span class="w-2.5 h-2.5 rounded-full inline-block {{ $c4['dot'] }}"></span>
-                                <span class="font-extrabold text-xs {{ $c4['text'] }} uppercase tracking-wider">4. Sohibul Sapi</span>
+                            <div class="pa-block-title {{ $c4['text'] }}" style="border-left-color:currentColor;">
+                                <span class="w-3 h-3 rounded-full inline-block flex-shrink-0 {{ $c4['dot'] }}"></span>
+                                <span class="pa-block-title-text">4. Sohibul Qurban Sapi</span>
                                 <span class="pa-badge" style="{{ $c4['badge'] }}">{{ ucfirst($color_block_4) }}</span>
                             </div>
                             <div style="display:flex;gap:6px;align-items:center;margin-bottom:10px;">
@@ -490,9 +514,9 @@
                     {{-- BLOCK 5: SOHIBUL QURBAN KAMBING --}}
                     <div style="border-right:1px solid #e2e8f0;" class="dark:border-gray-700">
                         <div class="pa-inner-wrap">
-                            <div class="pa-section-label">
-                                <span class="w-2.5 h-2.5 rounded-full inline-block {{ $c5['dot'] }}"></span>
-                                <span class="font-extrabold text-xs {{ $c5['text'] }} uppercase tracking-wider">5. Sohibul Kambing</span>
+                            <div class="pa-block-title {{ $c5['text'] }}" style="border-left-color:currentColor;">
+                                <span class="w-3 h-3 rounded-full inline-block flex-shrink-0 {{ $c5['dot'] }}"></span>
+                                <span class="pa-block-title-text">5. Sohibul Qurban Kambing</span>
                                 <span class="pa-badge" style="{{ $c5['badge'] }}">{{ ucfirst($color_block_5) }}</span>
                             </div>
                             <div style="display:flex;gap:6px;align-items:center;margin-bottom:10px;">
@@ -523,9 +547,9 @@
                     {{-- BLOCK 6: DISTRIBUSI BUNGKUSAN DAGING --}}
                     <div>
                         <div class="pa-inner-wrap">
-                            <div class="pa-section-label">
-                                <span class="w-2.5 h-2.5 rounded-full inline-block {{ $c6['dot'] }}"></span>
-                                <span class="font-extrabold text-xs {{ $c6['text'] }} uppercase tracking-wider">6. Distribusi Daging</span>
+                            <div class="pa-block-title {{ $c6['text'] }}" style="border-left-color:currentColor;">
+                                <span class="w-3 h-3 rounded-full inline-block flex-shrink-0 {{ $c6['dot'] }}"></span>
+                                <span class="pa-block-title-text">6. Distribusi Daging</span>
                                 <span class="pa-badge" style="{{ $c6['badge'] }}">{{ ucfirst($color_block_6) }}</span>
                             </div>
                             <div style="display:flex;gap:6px;align-items:center;margin-bottom:10px;">
