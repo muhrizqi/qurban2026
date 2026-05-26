@@ -6,13 +6,24 @@
     <title>Playback History - Progress Report Qurban 1447H</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root {
+        /* Dark Mode variables */
+        body.theme-mode-dark {
             --bg-color: #090d16;
-            --card-bg: rgba(17, 24, 39, 0.7);
+            --card-bg: rgba(17, 24, 39, 0.75);
             --card-border: rgba(255, 255, 255, 0.08);
             --text-main: #f3f4f6;
             --text-muted: #9ca3af;
             --text-gold: #f59e0b;
+        }
+
+        /* Light Mode variables */
+        body.theme-mode-light {
+            --bg-color: #f1f5f9;
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --card-border: rgba(15, 23, 42, 0.08);
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --text-gold: #d97706;
         }
 
         /* Preset themes mapping to CSS custom properties */
@@ -65,6 +76,67 @@
             flex-direction: column;
             padding: 2.5rem 3rem 8rem 3rem; /* Extra bottom padding for floating playback controls */
             overflow-x: hidden;
+            transition: background-color 0.8s ease, color 0.8s ease;
+        }
+
+        /* Light Mode Specific Overrides */
+        body.theme-mode-light {
+            background-image: 
+                radial-gradient(at 10% 20%, rgba(99, 102, 241, 0.08) 0px, transparent 50%),
+                radial-gradient(at 90% 80%, rgba(16, 185, 129, 0.06) 0px, transparent 50%);
+        }
+        body.theme-mode-light .header-title-area h1 {
+            background: linear-gradient(to right, #0f172a, #475569);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        body.theme-mode-light .group-title::after {
+            background: rgba(15, 23, 42, 0.08);
+        }
+        body.theme-mode-light .card {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.02), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+        }
+        body.theme-mode-light .item-label {
+            color: #334155;
+        }
+        body.theme-mode-light .item-values {
+            color: #0f172a;
+        }
+        body.theme-mode-light .progress-bar-container {
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.02);
+        }
+
+        /* Light Mode Control Overrides */
+        body.theme-mode-light .playback-controls {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(15, 23, 42, 0.1);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+        }
+        body.theme-mode-light .playback-timestamp {
+            color: #0f172a;
+        }
+        body.theme-mode-light .play-btn {
+            background: #0f172a;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
+        }
+        body.theme-mode-light .playback-info-area {
+            border-right: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        body.theme-mode-light .speed-control {
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+        }
+        body.theme-mode-light .speed-btn {
+            color: #475569;
+        }
+        body.theme-mode-light .speed-btn.active {
+            background: rgba(0, 0, 0, 0.1);
+            color: #0f172a;
+        }
+        body.theme-mode-light .timeline-slider {
+            background: rgba(0, 0, 0, 0.1);
         }
 
         header {
@@ -469,7 +541,7 @@
         }
     </style>
 </head>
-<body>
+<body class="theme-mode-{{ $state->theme }}">
 
     <header>
         <div class="header-title-area">
@@ -883,6 +955,14 @@
 
                     // Update slider
                     slider.value = idx;
+
+                    // Update theme mode (light/dark) dynamically
+                    const body = document.body;
+                    const newThemeMode = `theme-mode-${data.theme || 'dark'}`;
+                    if (!body.classList.contains(newThemeMode)) {
+                        body.classList.remove('theme-mode-dark', 'theme-mode-light');
+                        body.classList.add(newThemeMode);
+                    }
 
                     // Update card theme colors dynamically
                     for (let i = 1; i <= 6; i++) {

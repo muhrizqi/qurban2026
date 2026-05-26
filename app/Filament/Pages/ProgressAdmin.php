@@ -19,6 +19,7 @@ class ProgressAdmin extends Page
     protected string $view = 'filament.pages.progress-admin';
 
     // Form variables
+    public $theme;
     public $penyembelihan_sapi_tersembelih;
     public $penyembelihan_sapi_total;
     public $penyembelihan_kambing_tersembelih;

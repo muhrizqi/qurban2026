@@ -36,6 +36,7 @@ class ProgressState extends Model
         return self::firstOrCreate(
             ['id' => 1],
             [
+                'theme' => 'dark',
                 'color_block_1' => 'emerald',
                 'color_block_2' => 'indigo',
                 'color_block_3' => 'violet',
