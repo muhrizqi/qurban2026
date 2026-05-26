@@ -57,6 +57,66 @@
             --theme-color-rgb: 14, 165, 233;
             --theme-gradient: linear-gradient(135deg, #0ea5e9, #0284c7);
         }
+        .theme-teal {
+            --theme-color: #14b8a6;
+            --theme-color-rgb: 20, 184, 166;
+            --theme-gradient: linear-gradient(135deg, #14b8a6, #0d9488);
+        }
+        .theme-fuchsia {
+            --theme-color: #d946ef;
+            --theme-color-rgb: 217, 70, 239;
+            --theme-gradient: linear-gradient(135deg, #d946ef, #c026d3);
+        }
+        .theme-cyan {
+            --theme-color: #06b6d4;
+            --theme-color-rgb: 6, 182, 212;
+            --theme-gradient: linear-gradient(135deg, #06b6d4, #0891b2);
+        }
+        .theme-lime {
+            --theme-color: #84cc16;
+            --theme-color-rgb: 132, 204, 22;
+            --theme-gradient: linear-gradient(135deg, #84cc16, #65a30d);
+        }
+        .theme-orange {
+            --theme-color: #f97316;
+            --theme-color-rgb: 249, 115, 22;
+            --theme-gradient: linear-gradient(135deg, #f97316, #ea580c);
+        }
+        .theme-slate {
+            --theme-color: #64748b;
+            --theme-color-rgb: 100, 116, 139;
+            --theme-gradient: linear-gradient(135deg, #64748b, #475569);
+        }
+
+        /* Dark Mode bg-theme overrides */
+        body.theme-mode-dark .bg-theme-default { /* No override */ }
+        body.theme-mode-dark .bg-theme-emerald { --card-bg: rgba(6, 78, 59, 0.45); --card-border: rgba(16, 185, 129, 0.2); }
+        body.theme-mode-dark .bg-theme-indigo { --card-bg: rgba(49, 46, 129, 0.45); --card-border: rgba(99, 102, 241, 0.2); }
+        body.theme-mode-dark .bg-theme-violet { --card-bg: rgba(76, 29, 149, 0.45); --card-border: rgba(139, 92, 246, 0.2); }
+        body.theme-mode-dark .bg-theme-rose { --card-bg: rgba(136, 19, 55, 0.45); --card-border: rgba(244, 63, 94, 0.2); }
+        body.theme-mode-dark .bg-theme-amber { --card-bg: rgba(120, 53, 4, 0.45); --card-border: rgba(245, 158, 11, 0.2); }
+        body.theme-mode-dark .bg-theme-sky { --card-bg: rgba(12, 74, 96, 0.45); --card-border: rgba(14, 165, 233, 0.2); }
+        body.theme-mode-dark .bg-theme-teal { --card-bg: rgba(19, 78, 74, 0.45); --card-border: rgba(20, 184, 166, 0.2); }
+        body.theme-mode-dark .bg-theme-fuchsia { --card-bg: rgba(112, 26, 117, 0.45); --card-border: rgba(217, 70, 239, 0.2); }
+        body.theme-mode-dark .bg-theme-cyan { --card-bg: rgba(22, 78, 99, 0.45); --card-border: rgba(6, 182, 212, 0.2); }
+        body.theme-mode-dark .bg-theme-lime { --card-bg: rgba(63, 98, 18, 0.45); --card-border: rgba(132, 204, 22, 0.2); }
+        body.theme-mode-dark .bg-theme-orange { --card-bg: rgba(124, 45, 18, 0.45); --card-border: rgba(249, 115, 22, 0.2); }
+        body.theme-mode-dark .bg-theme-slate { --card-bg: rgba(30, 41, 59, 0.65); --card-border: rgba(100, 116, 139, 0.25); }
+
+        /* Light Mode bg-theme overrides */
+        body.theme-mode-light .bg-theme-default { /* No override */ }
+        body.theme-mode-light .bg-theme-emerald { --card-bg: rgba(209, 250, 229, 0.65); --card-border: rgba(16, 185, 129, 0.3); }
+        body.theme-mode-light .bg-theme-indigo { --card-bg: rgba(224, 231, 255, 0.65); --card-border: rgba(99, 102, 241, 0.3); }
+        body.theme-mode-light .bg-theme-violet { --card-bg: rgba(237, 233, 254, 0.65); --card-border: rgba(139, 92, 246, 0.3); }
+        body.theme-mode-light .bg-theme-rose { --card-bg: rgba(254, 226, 226, 0.65); --card-border: rgba(244, 63, 94, 0.3); }
+        body.theme-mode-light .bg-theme-amber { --card-bg: rgba(254, 243, 199, 0.65); --card-border: rgba(245, 158, 11, 0.3); }
+        body.theme-mode-light .bg-theme-sky { --card-bg: rgba(224, 242, 254, 0.65); --card-border: rgba(14, 165, 233, 0.3); }
+        body.theme-mode-light .bg-theme-teal { --card-bg: rgba(204, 251, 241, 0.65); --card-border: rgba(20, 184, 166, 0.3); }
+        body.theme-mode-light .bg-theme-fuchsia { --card-bg: rgba(250, 232, 255, 0.65); --card-border: rgba(217, 70, 239, 0.3); }
+        body.theme-mode-light .bg-theme-cyan { --card-bg: rgba(207, 250, 254, 0.65); --card-border: rgba(6, 182, 212, 0.3); }
+        body.theme-mode-light .bg-theme-lime { --card-bg: rgba(236, 253, 203, 0.65); --card-border: rgba(132, 204, 22, 0.3); }
+        body.theme-mode-light .bg-theme-orange { --card-bg: rgba(255, 237, 213, 0.65); --card-border: rgba(249, 115, 22, 0.3); }
+        body.theme-mode-light .bg-theme-slate { --card-bg: rgba(226, 232, 240, 0.85); --card-border: rgba(100, 116, 139, 0.3); }
 
         * {
             box-sizing: border-box;
@@ -440,7 +500,7 @@
         <div class="grid-layout">
             
             <!-- Block 1: PENYEMBELIHAN -->
-            <div id="card_block_1" class="card theme-{{ $state->color_block_1 }}">
+            <div id="card_block_1" class="card theme-{{ $state->color_block_1 }} bg-theme-{{ $state->bg_block_1 ?? 'default' }}">
                 <div class="card-header">
                     <h3 class="card-title">Penyembelihan</h3>
                 </div>
@@ -477,7 +537,7 @@
             </div>
 
             <!-- Block 2: PENGELETAN -->
-            <div id="card_block_2" class="card theme-{{ $state->color_block_2 }}">
+            <div id="card_block_2" class="card theme-{{ $state->color_block_2 }} bg-theme-{{ $state->bg_block_2 ?? 'default' }}">
                 <div class="card-header">
                     <h3 class="card-title">Pengeletan</h3>
                 </div>
@@ -514,7 +574,7 @@
             </div>
 
             <!-- Block 3: PENIMBANGAN -->
-            <div id="card_block_3" class="card theme-{{ $state->color_block_3 }}">
+            <div id="card_block_3" class="card theme-{{ $state->color_block_3 }} bg-theme-{{ $state->bg_block_3 ?? 'default' }}">
                 <div class="card-header">
                     <h3 class="card-title">Penimbangan</h3>
                 </div>
@@ -577,7 +637,7 @@
         <div class="grid-layout">
             
             <!-- Block 4: SOHIBUL QURBAN SAPI -->
-            <div id="card_block_4" class="card theme-{{ $state->color_block_4 }}">
+            <div id="card_block_4" class="card theme-{{ $state->color_block_4 }} bg-theme-{{ $state->bg_block_4 ?? 'default' }}">
                 <div class="card-header">
                     <h3 class="card-title">Sohibul Qurban Sapi</h3>
                 </div>
@@ -656,7 +716,7 @@
             </div>
 
             <!-- Block 5: SOHIBUL QURBAN KAMBING -->
-            <div id="card_block_5" class="card theme-{{ $state->color_block_5 }}">
+            <div id="card_block_5" class="card theme-{{ $state->color_block_5 }} bg-theme-{{ $state->bg_block_5 ?? 'default' }}">
                 <div class="card-header">
                     <h3 class="card-title">Sohibul Qurban Kambing</h3>
                 </div>
@@ -693,7 +753,7 @@
             </div>
 
             <!-- Block 6: DISTRIBUSI BUNGKUSAN DAGING -->
-            <div id="card_block_6" class="card theme-{{ $state->color_block_6 }}">
+            <div id="card_block_6" class="card theme-{{ $state->color_block_6 }} bg-theme-{{ $state->bg_block_6 ?? 'default' }}">
                 <div class="card-header">
                     <h3 class="card-title">Distribusi Bungkus Daging</h3>
                 </div>
@@ -799,10 +859,14 @@
                     for (let i = 1; i <= 6; i++) {
                         const card = document.getElementById(`card_block_${i}`);
                         const newTheme = `theme-${data[`color_block_${i}`]}`;
-                        if (card && !card.classList.contains(newTheme)) {
-                            // Strip old theme classes and add new one
-                            card.className = card.className.split(' ').filter(c => !c.startsWith('theme-')).join(' ');
-                            card.classList.add(newTheme);
+                        const newBg = `bg-theme-${data[`bg_block_${i}`] || 'default'}`;
+                        if (card) {
+                            const hasTheme = card.classList.contains(newTheme);
+                            const hasBg = card.classList.contains(newBg);
+                            if (!hasTheme || !hasBg) {
+                                card.className = card.className.split(' ').filter(c => !c.startsWith('theme-') && !c.startsWith('bg-theme-')).join(' ');
+                                card.classList.add(newTheme, newBg);
+                            }
                         }
                     }
 

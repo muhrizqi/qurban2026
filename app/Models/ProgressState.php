@@ -28,9 +28,6 @@ class ProgressState extends Model
         'bungkusan_daging_terdistribusi_time' => 'datetime',
     ];
 
-    /**
-     * Get the singleton progress state record.
-     */
     public static function getSingle(): self
     {
         return self::firstOrCreate(
@@ -43,6 +40,12 @@ class ProgressState extends Model
                 'color_block_4' => 'rose',
                 'color_block_5' => 'amber',
                 'color_block_6' => 'sky',
+                'bg_block_1' => 'default',
+                'bg_block_2' => 'default',
+                'bg_block_3' => 'default',
+                'bg_block_4' => 'default',
+                'bg_block_5' => 'default',
+                'bg_block_6' => 'default',
             ]
         );
     }

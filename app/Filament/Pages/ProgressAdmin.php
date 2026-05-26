@@ -63,6 +63,13 @@ class ProgressAdmin extends Page
     public $color_block_5;
     public $color_block_6;
 
+    public $bg_block_1;
+    public $bg_block_2;
+    public $bg_block_3;
+    public $bg_block_4;
+    public $bg_block_5;
+    public $bg_block_6;
+
     public static function canAccess(): bool
     {
         return auth()->user()?->hasAnyRole(['admin', 'adminprogres']) ?? false;

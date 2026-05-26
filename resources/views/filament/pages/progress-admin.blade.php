@@ -38,6 +38,42 @@
                 'text'   => 'text-sky-700 dark:text-sky-400',
                 'dot'    => 'bg-sky-500'
             ],
+            'teal' => [
+                'border' => 'border-t-teal-500 dark:border-t-teal-600',
+                'bg'     => 'bg-teal-50/50 dark:bg-teal-950/15',
+                'text'   => 'text-teal-700 dark:text-teal-400',
+                'dot'    => 'bg-teal-500'
+            ],
+            'fuchsia' => [
+                'border' => 'border-t-fuchsia-500 dark:border-t-fuchsia-600',
+                'bg'     => 'bg-fuchsia-50/50 dark:bg-fuchsia-950/15',
+                'text'   => 'text-fuchsia-700 dark:text-fuchsia-400',
+                'dot'    => 'bg-fuchsia-500'
+            ],
+            'cyan' => [
+                'border' => 'border-t-cyan-500 dark:border-t-cyan-600',
+                'bg'     => 'bg-cyan-50/50 dark:bg-cyan-950/15',
+                'text'   => 'text-cyan-700 dark:text-cyan-400',
+                'dot'    => 'bg-cyan-500'
+            ],
+            'lime' => [
+                'border' => 'border-t-lime-500 dark:border-t-lime-600',
+                'bg'     => 'bg-lime-50/50 dark:bg-lime-950/15',
+                'text'   => 'text-lime-700 dark:text-lime-400',
+                'dot'    => 'bg-lime-500'
+            ],
+            'orange' => [
+                'border' => 'border-t-orange-500 dark:border-t-orange-600',
+                'bg'     => 'bg-orange-50/50 dark:bg-orange-950/15',
+                'text'   => 'text-orange-700 dark:text-orange-400',
+                'dot'    => 'bg-orange-500'
+            ],
+            'slate' => [
+                'border' => 'border-t-slate-500 dark:border-t-slate-600',
+                'bg'     => 'bg-slate-50/50 dark:bg-slate-950/15',
+                'text'   => 'text-slate-700 dark:text-slate-400',
+                'dot'    => 'bg-slate-500'
+            ],
         ];
     @endphp
 
@@ -98,19 +134,48 @@
                 <!-- BLOCK 1: PENYEMBELIHAN -->
                 @php $c1 = $colorMap[$color_block_1] ?? $colorMap['emerald']; @endphp
                 <div class="border-t-4 {{ $c1['border'] }} border-r border-b border-l rounded-xl bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden transition">
-                    <div class="px-5 py-4 border-b border-gray-200 dark:border-gray-800 {{ $c1['bg'] }} flex justify-between items-center">
+                    <div class="px-5 py-4 border-b border-gray-200 dark:border-gray-800 {{ $c1['bg'] }} flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                         <div class="flex items-center gap-2">
                             <span class="w-2.5 h-2.5 rounded-full {{ $c1['dot'] }}"></span>
                             <h3 class="font-extrabold text-xs {{ $c1['text'] }} uppercase tracking-wider">1. Penyembelihan</h3>
                         </div>
-                        <select wire:model.live="color_block_1" class="text-xs py-1 rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 font-semibold focus:ring-amber-500">
-                            <option value="emerald">💚 Emerald</option>
-                            <option value="indigo">💙 Indigo</option>
-                            <option value="violet">💜 Violet</option>
-                            <option value="rose">❤️ Rose</option>
-                            <option value="amber">💛 Amber</option>
-                            <option value="sky">🩵 Sky</option>
-                        </select>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <div class="flex items-center gap-1">
+                                <span class="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase">Accent:</span>
+                                <select wire:model.live="color_block_1" class="text-xs py-0.5 px-2 rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 font-semibold focus:ring-amber-500 focus:border-amber-500">
+                                    <option value="emerald">💚 Emerald</option>
+                                    <option value="indigo">💙 Indigo</option>
+                                    <option value="violet">💜 Violet</option>
+                                    <option value="rose">❤️ Rose</option>
+                                    <option value="amber">💛 Amber</option>
+                                    <option value="sky">🩵 Sky</option>
+                                    <option value="teal">💚 Teal</option>
+                                    <option value="fuchsia">💜 Fuchsia</option>
+                                    <option value="cyan">🩵 Cyan</option>
+                                    <option value="lime">💚 Lime</option>
+                                    <option value="orange">🧡 Orange</option>
+                                    <option value="slate">🩶 Slate</option>
+                                </select>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <span class="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase">Bg:</span>
+                                <select wire:model.live="bg_block_1" class="text-xs py-0.5 px-2 rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 font-semibold focus:ring-amber-500 focus:border-amber-500">
+                                    <option value="default">✨ Default (Glass)</option>
+                                    <option value="emerald">💚 Emerald Tint</option>
+                                    <option value="indigo">💙 Indigo Tint</option>
+                                    <option value="violet">💜 Violet Tint</option>
+                                    <option value="rose">❤️ Rose Tint</option>
+                                    <option value="amber">💛 Amber Tint</option>
+                                    <option value="sky">🩵 Sky Tint</option>
+                                    <option value="teal">💚 Teal Tint</option>
+                                    <option value="fuchsia">💜 Fuchsia Tint</option>
+                                    <option value="cyan">🩵 Cyan Tint</option>
+                                    <option value="lime">💚 Lime Tint</option>
+                                    <option value="orange">🧡 Orange Tint</option>
+                                    <option value="slate">🩶 Slate Tint</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                     <div class="p-5 space-y-4">
                         <div class="space-y-2">
@@ -130,19 +195,48 @@
                 <!-- BLOCK 2: PENGELETAN -->
                 @php $c2 = $colorMap[$color_block_2] ?? $colorMap['indigo']; @endphp
                 <div class="border-t-4 {{ $c2['border'] }} border-r border-b border-l rounded-xl bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden transition">
-                    <div class="px-5 py-4 border-b border-gray-200 dark:border-gray-800 {{ $c2['bg'] }} flex justify-between items-center">
+                    <div class="px-5 py-4 border-b border-gray-200 dark:border-gray-800 {{ $c2['bg'] }} flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                         <div class="flex items-center gap-2">
                             <span class="w-2.5 h-2.5 rounded-full {{ $c2['dot'] }}"></span>
                             <h3 class="font-extrabold text-xs {{ $c2['text'] }} uppercase tracking-wider">2. Pengeletan</h3>
                         </div>
-                        <select wire:model.live="color_block_2" class="text-xs py-1 rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 font-semibold focus:ring-amber-500">
-                            <option value="emerald">💚 Emerald</option>
-                            <option value="indigo">💙 Indigo</option>
-                            <option value="violet">💜 Violet</option>
-                            <option value="rose">❤️ Rose</option>
-                            <option value="amber">💛 Amber</option>
-                            <option value="sky">🩵 Sky</option>
-                        </select>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <div class="flex items-center gap-1">
+                                <span class="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase">Accent:</span>
+                                <select wire:model.live="color_block_2" class="text-xs py-0.5 px-2 rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 font-semibold focus:ring-amber-500 focus:border-amber-500">
+                                    <option value="emerald">💚 Emerald</option>
+                                    <option value="indigo">💙 Indigo</option>
+                                    <option value="violet">💜 Violet</option>
+                                    <option value="rose">❤️ Rose</option>
+                                    <option value="amber">💛 Amber</option>
+                                    <option value="sky">🩵 Sky</option>
+                                    <option value="teal">💚 Teal</option>
+                                    <option value="fuchsia">💜 Fuchsia</option>
+                                    <option value="cyan">🩵 Cyan</option>
+                                    <option value="lime">💚 Lime</option>
+                                    <option value="orange">🧡 Orange</option>
+                                    <option value="slate">🩶 Slate</option>
+                                </select>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <span class="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase">Bg:</span>
+                                <select wire:model.live="bg_block_2" class="text-xs py-0.5 px-2 rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 font-semibold focus:ring-amber-500 focus:border-amber-500">
+                                    <option value="default">✨ Default (Glass)</option>
+                                    <option value="emerald">💚 Emerald Tint</option>
+                                    <option value="indigo">💙 Indigo Tint</option>
+                                    <option value="violet">💜 Violet Tint</option>
+                                    <option value="rose">❤️ Rose Tint</option>
+                                    <option value="amber">💛 Amber Tint</option>
+                                    <option value="sky">🩵 Sky Tint</option>
+                                    <option value="teal">💚 Teal Tint</option>
+                                    <option value="fuchsia">💜 Fuchsia Tint</option>
+                                    <option value="cyan">🩵 Cyan Tint</option>
+                                    <option value="lime">💚 Lime Tint</option>
+                                    <option value="orange">🧡 Orange Tint</option>
+                                    <option value="slate">🩶 Slate Tint</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                     <div class="p-5 space-y-4">
                         <div class="space-y-2">
@@ -162,19 +256,48 @@
                 <!-- BLOCK 3: PENIMBANGAN -->
                 @php $c3 = $colorMap[$color_block_3] ?? $colorMap['violet']; @endphp
                 <div class="border-t-4 {{ $c3['border'] }} border-r border-b border-l rounded-xl bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden transition">
-                    <div class="px-5 py-4 border-b border-gray-200 dark:border-gray-800 {{ $c3['bg'] }} flex justify-between items-center">
+                    <div class="px-5 py-4 border-b border-gray-200 dark:border-gray-800 {{ $c3['bg'] }} flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                         <div class="flex items-center gap-2">
                             <span class="w-2.5 h-2.5 rounded-full {{ $c3['dot'] }}"></span>
                             <h3 class="font-extrabold text-xs {{ $c3['text'] }} uppercase tracking-wider">3. Penimbangan</h3>
                         </div>
-                        <select wire:model.live="color_block_3" class="text-xs py-1 rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 font-semibold focus:ring-amber-500">
-                            <option value="emerald">💚 Emerald</option>
-                            <option value="indigo">💙 Indigo</option>
-                            <option value="violet">💜 Violet</option>
-                            <option value="rose">❤️ Rose</option>
-                            <option value="amber">💛 Amber</option>
-                            <option value="sky">🩵 Sky</option>
-                        </select>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <div class="flex items-center gap-1">
+                                <span class="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase">Accent:</span>
+                                <select wire:model.live="color_block_3" class="text-xs py-0.5 px-2 rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 font-semibold focus:ring-amber-500 focus:border-amber-500">
+                                    <option value="emerald">💚 Emerald</option>
+                                    <option value="indigo">💙 Indigo</option>
+                                    <option value="violet">💜 Violet</option>
+                                    <option value="rose">❤️ Rose</option>
+                                    <option value="amber">💛 Amber</option>
+                                    <option value="sky">🩵 Sky</option>
+                                    <option value="teal">💚 Teal</option>
+                                    <option value="fuchsia">💜 Fuchsia</option>
+                                    <option value="cyan">🩵 Cyan</option>
+                                    <option value="lime">💚 Lime</option>
+                                    <option value="orange">🧡 Orange</option>
+                                    <option value="slate">🩶 Slate</option>
+                                </select>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <span class="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase">Bg:</span>
+                                <select wire:model.live="bg_block_3" class="text-xs py-0.5 px-2 rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 font-semibold focus:ring-amber-500 focus:border-amber-500">
+                                    <option value="default">✨ Default (Glass)</option>
+                                    <option value="emerald">💚 Emerald Tint</option>
+                                    <option value="indigo">💙 Indigo Tint</option>
+                                    <option value="violet">💜 Violet Tint</option>
+                                    <option value="rose">❤️ Rose Tint</option>
+                                    <option value="amber">💛 Amber Tint</option>
+                                    <option value="sky">🩵 Sky Tint</option>
+                                    <option value="teal">💚 Teal Tint</option>
+                                    <option value="fuchsia">💜 Fuchsia Tint</option>
+                                    <option value="cyan">🩵 Cyan Tint</option>
+                                    <option value="lime">💚 Lime Tint</option>
+                                    <option value="orange">🧡 Orange Tint</option>
+                                    <option value="slate">🩶 Slate Tint</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                     <div class="p-5 space-y-4">
                         <div class="space-y-2">
@@ -205,24 +328,53 @@
                 <h2 class="text-base font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Distribusi Qurban</h2>
                 <div class="h-px bg-gray-200 dark:bg-gray-800 flex-grow"></div>
             </div>
-            
+
             <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 <!-- BLOCK 4: SOHIBUL QURBAN SAPI -->
                 @php $c4 = $colorMap[$color_block_4] ?? $colorMap['rose']; @endphp
                 <div class="border-t-4 {{ $c4['border'] }} border-r border-b border-l rounded-xl bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden md:col-span-2 xl:col-span-1 transition">
-                    <div class="px-5 py-4 border-b border-gray-200 dark:border-gray-800 {{ $c4['bg'] }} flex justify-between items-center">
+                    <div class="px-5 py-4 border-b border-gray-200 dark:border-gray-800 {{ $c4['bg'] }} flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                         <div class="flex items-center gap-2">
                             <span class="w-2.5 h-2.5 rounded-full {{ $c4['dot'] }}"></span>
                             <h3 class="font-extrabold text-xs {{ $c4['text'] }} uppercase tracking-wider">4. Sohibul Qurban Sapi</h3>
                         </div>
-                        <select wire:model.live="color_block_4" class="text-xs py-1 rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 font-semibold focus:ring-amber-500">
-                            <option value="emerald">💚 Emerald</option>
-                            <option value="indigo">💙 Indigo</option>
-                            <option value="violet">💜 Violet</option>
-                            <option value="rose">❤️ Rose</option>
-                            <option value="amber">💛 Amber</option>
-                            <option value="sky">🩵 Sky</option>
-                        </select>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <div class="flex items-center gap-1">
+                                <span class="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase">Accent:</span>
+                                <select wire:model.live="color_block_4" class="text-xs py-0.5 px-2 rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 font-semibold focus:ring-amber-500 focus:border-amber-500">
+                                    <option value="emerald">💚 Emerald</option>
+                                    <option value="indigo">💙 Indigo</option>
+                                    <option value="violet">💜 Violet</option>
+                                    <option value="rose">❤️ Rose</option>
+                                    <option value="amber">💛 Amber</option>
+                                    <option value="sky">🩵 Sky</option>
+                                    <option value="teal">💚 Teal</option>
+                                    <option value="fuchsia">💜 Fuchsia</option>
+                                    <option value="cyan">🩵 Cyan</option>
+                                    <option value="lime">💚 Lime</option>
+                                    <option value="orange">🧡 Orange</option>
+                                    <option value="slate">🩶 Slate</option>
+                                </select>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <span class="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase">Bg:</span>
+                                <select wire:model.live="bg_block_4" class="text-xs py-0.5 px-2 rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 font-semibold focus:ring-amber-500 focus:border-amber-500">
+                                    <option value="default">✨ Default (Glass)</option>
+                                    <option value="emerald">💚 Emerald Tint</option>
+                                    <option value="indigo">💙 Indigo Tint</option>
+                                    <option value="violet">💜 Violet Tint</option>
+                                    <option value="rose">❤️ Rose Tint</option>
+                                    <option value="amber">💛 Amber Tint</option>
+                                    <option value="sky">🩵 Sky Tint</option>
+                                    <option value="teal">💚 Teal Tint</option>
+                                    <option value="fuchsia">💜 Fuchsia Tint</option>
+                                    <option value="cyan">🩵 Cyan Tint</option>
+                                    <option value="lime">💚 Lime Tint</option>
+                                    <option value="orange">🧡 Orange Tint</option>
+                                    <option value="slate">🩶 Slate Tint</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                     <div class="p-5 space-y-4">
                         <!-- Sync Button -->
@@ -279,19 +431,48 @@
                 <!-- BLOCK 5: SOHIBUL QURBAN KAMBING -->
                 @php $c5 = $colorMap[$color_block_5] ?? $colorMap['amber']; @endphp
                 <div class="border-t-4 {{ $c5['border'] }} border-r border-b border-l rounded-xl bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden transition">
-                    <div class="px-5 py-4 border-b border-gray-200 dark:border-gray-800 {{ $c5['bg'] }} flex justify-between items-center">
+                    <div class="px-5 py-4 border-b border-gray-200 dark:border-gray-800 {{ $c5['bg'] }} flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                         <div class="flex items-center gap-2">
                             <span class="w-2.5 h-2.5 rounded-full {{ $c5['dot'] }}"></span>
                             <h3 class="font-extrabold text-xs {{ $c5['text'] }} uppercase tracking-wider">5. Sohibul Kambing</h3>
                         </div>
-                        <select wire:model.live="color_block_5" class="text-xs py-1 rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 font-semibold focus:ring-amber-500">
-                            <option value="emerald">💚 Emerald</option>
-                            <option value="indigo">💙 Indigo</option>
-                            <option value="violet">💜 Violet</option>
-                            <option value="rose">❤️ Rose</option>
-                            <option value="amber">💛 Amber</option>
-                            <option value="sky">🩵 Sky</option>
-                        </select>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <div class="flex items-center gap-1">
+                                <span class="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase">Accent:</span>
+                                <select wire:model.live="color_block_5" class="text-xs py-0.5 px-2 rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 font-semibold focus:ring-amber-500 focus:border-amber-500">
+                                    <option value="emerald">💚 Emerald</option>
+                                    <option value="indigo">💙 Indigo</option>
+                                    <option value="violet">💜 Violet</option>
+                                    <option value="rose">❤️ Rose</option>
+                                    <option value="amber">💛 Amber</option>
+                                    <option value="sky">🩵 Sky</option>
+                                    <option value="teal">💚 Teal</option>
+                                    <option value="fuchsia">💜 Fuchsia</option>
+                                    <option value="cyan">🩵 Cyan</option>
+                                    <option value="lime">💚 Lime</option>
+                                    <option value="orange">🧡 Orange</option>
+                                    <option value="slate">🩶 Slate</option>
+                                </select>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <span class="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase">Bg:</span>
+                                <select wire:model.live="bg_block_5" class="text-xs py-0.5 px-2 rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 font-semibold focus:ring-amber-500 focus:border-amber-500">
+                                    <option value="default">✨ Default (Glass)</option>
+                                    <option value="emerald">💚 Emerald Tint</option>
+                                    <option value="indigo">💙 Indigo Tint</option>
+                                    <option value="violet">💜 Violet Tint</option>
+                                    <option value="rose">❤️ Rose Tint</option>
+                                    <option value="amber">💛 Amber Tint</option>
+                                    <option value="sky">🩵 Sky Tint</option>
+                                    <option value="teal">💚 Teal Tint</option>
+                                    <option value="fuchsia">💜 Fuchsia Tint</option>
+                                    <option value="cyan">🩵 Cyan Tint</option>
+                                    <option value="lime">💚 Lime Tint</option>
+                                    <option value="orange">🧡 Orange Tint</option>
+                                    <option value="slate">🩶 Slate Tint</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                     <div class="p-5 space-y-4">
                         @include('filament.pages.progress-input-row', ['label' => 'Terbungkus', 'field' => 'sohibul_kambing_terbungkus'])
@@ -303,19 +484,48 @@
                 <!-- BLOCK 6: DISTRIBUSI BUNGKUSAN DAGING -->
                 @php $c6 = $colorMap[$color_block_6] ?? $colorMap['sky']; @endphp
                 <div class="border-t-4 {{ $c6['border'] }} border-r border-b border-l rounded-xl bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden transition">
-                    <div class="px-5 py-4 border-b border-gray-200 dark:border-gray-800 {{ $c6['bg'] }} flex justify-between items-center">
+                    <div class="px-5 py-4 border-b border-gray-200 dark:border-gray-800 {{ $c6['bg'] }} flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                         <div class="flex items-center gap-2">
                             <span class="w-2.5 h-2.5 rounded-full {{ $c6['dot'] }}"></span>
                             <h3 class="font-extrabold text-xs {{ $c6['text'] }} uppercase tracking-wider">6. Distribusi Daging</h3>
                         </div>
-                        <select wire:model.live="color_block_6" class="text-xs py-1 rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 font-semibold focus:ring-amber-500">
-                            <option value="emerald">💚 Emerald</option>
-                            <option value="indigo">💙 Indigo</option>
-                            <option value="violet">💜 Violet</option>
-                            <option value="rose">❤️ Rose</option>
-                            <option value="amber">💛 Amber</option>
-                            <option value="sky">🩵 Sky</option>
-                        </select>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <div class="flex items-center gap-1">
+                                <span class="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase">Accent:</span>
+                                <select wire:model.live="color_block_6" class="text-xs py-0.5 px-2 rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 font-semibold focus:ring-amber-500 focus:border-amber-500">
+                                    <option value="emerald">💚 Emerald</option>
+                                    <option value="indigo">💙 Indigo</option>
+                                    <option value="violet">💜 Violet</option>
+                                    <option value="rose">❤️ Rose</option>
+                                    <option value="amber">💛 Amber</option>
+                                    <option value="sky">🩵 Sky</option>
+                                    <option value="teal">💚 Teal</option>
+                                    <option value="fuchsia">💜 Fuchsia</option>
+                                    <option value="cyan">🩵 Cyan</option>
+                                    <option value="lime">💚 Lime</option>
+                                    <option value="orange">🧡 Orange</option>
+                                    <option value="slate">🩶 Slate</option>
+                                </select>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <span class="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase">Bg:</span>
+                                <select wire:model.live="bg_block_6" class="text-xs py-0.5 px-2 rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 font-semibold focus:ring-amber-500 focus:border-amber-500">
+                                    <option value="default">✨ Default (Glass)</option>
+                                    <option value="emerald">💚 Emerald Tint</option>
+                                    <option value="indigo">💙 Indigo Tint</option>
+                                    <option value="violet">💜 Violet Tint</option>
+                                    <option value="rose">❤️ Rose Tint</option>
+                                    <option value="amber">💛 Amber Tint</option>
+                                    <option value="sky">🩵 Sky Tint</option>
+                                    <option value="teal">💚 Teal Tint</option>
+                                    <option value="fuchsia">💜 Fuchsia Tint</option>
+                                    <option value="cyan">🩵 Cyan Tint</option>
+                                    <option value="lime">💚 Lime Tint</option>
+                                    <option value="orange">🧡 Orange Tint</option>
+                                    <option value="slate">🩶 Slate Tint</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                     <div class="p-5 space-y-4">
                         @include('filament.pages.progress-input-row', ['label' => 'Terbungkus', 'field' => 'bungkusan_daging_terbungkus'])
