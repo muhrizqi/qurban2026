@@ -580,8 +580,7 @@
 
                 <!-- Block 4: SOHIBUL QURBAN SAPI REGULER -->
                 <div id="card_block_4" class="card theme-{{ $state->color_block_4 }} bg-theme-{{ $state->bg_block_4 ?? 'default' }}">
-                    <div class="card-title">Sohibul Qurban Sapi</div>
-                    <div class="sub-card-label">SAPI REGULER</div>
+                    <div class="card-title">Sohibul Sapi Reguler</div>
                     <div class="progress-item">
                         <div class="item-label-row">
                             <span class="item-label">TERBUNGKUS</span>
@@ -611,8 +610,7 @@
 
                 <!-- Block 4b: SOHIBUL QURBAN SAPI KHUSUS -->
                 <div id="card_block_4b" class="card theme-{{ $state->color_block_4 }} bg-theme-{{ $state->bg_block_4 ?? 'default' }}">
-                    <div class="card-title">Sohibul Qurban Sapi</div>
-                    <div class="sub-card-label">SAPI SUPER, DUPER &amp; PRIBADI</div>
+                    <div class="card-title">Sohibul Sapi Super, Duper &amp; Pribadi</div>
                     <div class="progress-item">
                         <div class="item-label-row">
                             <span class="item-label">TERBUNGKUS</span>
