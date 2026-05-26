@@ -200,6 +200,76 @@ class ProgressAdmin extends Page
             ->send();
     }
 
+    /**
+     * Reset all progress values to 0 and timestamps to null.
+     */
+    public function resetProgress()
+    {
+        $state = ProgressState::getSingle();
+        
+        $fields = [
+            'penyembelihan_sapi_tersembelih' => 0,
+            'penyembelihan_sapi_total' => 0,
+            'penyembelihan_sapi_time' => null,
+            'penyembelihan_kambing_tersembelih' => 0,
+            'penyembelihan_kambing_total' => 0,
+            'penyembelihan_kambing_time' => null,
+            
+            'pengeletan_sapi_terkelet' => 0,
+            'pengeletan_sapi_total' => 0,
+            'pengeletan_sapi_time' => null,
+            'pengeletan_kambing_terkelet' => 0,
+            'pengeletan_kambing_total' => 0,
+            'pengeletan_kambing_time' => null,
+            
+            'penimbangan_sapi_reguler_tertimbang' => 0,
+            'penimbangan_sapi_reguler_total' => 0,
+            'penimbangan_sapi_reguler_time' => null,
+            'penimbangan_sapi_khusus_tertimbang' => 0,
+            'penimbangan_sapi_khusus_total' => 0,
+            'penimbangan_sapi_khusus_time' => null,
+            'penimbangan_kambing_tertimbang' => 0,
+            'penimbangan_kambing_total' => 0,
+            'penimbangan_kambing_time' => null,
+            
+            'sohibul_sapi_reguler_terbungkus' => 0,
+            'sohibul_sapi_reguler_total' => 0,
+            'sohibul_sapi_reguler_tidak_diambil' => 0,
+            'sohibul_sapi_reguler_terdistribusi' => 0,
+            'sohibul_sapi_reguler_terbungkus_time' => null,
+            'sohibul_sapi_reguler_terdistribusi_time' => null,
+            
+            'sohibul_sapi_khusus_terbungkus' => 0,
+            'sohibul_sapi_khusus_total' => 0,
+            'sohibul_sapi_khusus_tidak_diambil' => 0,
+            'sohibul_sapi_khusus_terdistribusi' => 0,
+            'sohibul_sapi_khusus_terbungkus_time' => null,
+            'sohibul_sapi_khusus_terdistribusi_time' => null,
+            
+            'sohibul_kambing_terbungkus' => 0,
+            'sohibul_kambing_total' => 0,
+            'sohibul_kambing_terdistribusi' => 0,
+            'sohibul_kambing_terbungkus_time' => null,
+            'sohibul_kambing_terdistribusi_time' => null,
+            
+            'bungkusan_daging_terbungkus' => 0,
+            'bungkusan_daging_total' => 0,
+            'bungkusan_daging_terdistribusi' => 0,
+            'bungkusan_daging_terbungkus_time' => null,
+            'bungkusan_daging_terdistribusi_time' => null,
+        ];
+        
+        $state->update($fields);
+        
+        // Reload local page properties
+        $this->mount();
+        
+        Notification::make()
+            ->title('Seluruh progress qurban berhasil di-reset!')
+            ->success()
+            ->send();
+    }
+
     protected function getHeaderActions(): array
     {
         return [];

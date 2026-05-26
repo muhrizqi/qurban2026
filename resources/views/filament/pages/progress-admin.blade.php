@@ -68,6 +68,14 @@
                         🎞️ Playback Animasi
                     </a>
                     <button 
+                        wire:click="resetProgress" 
+                        wire:confirm="Apakah Anda yakin ingin mereset semua data progress qurban menjadi 0 dan menghapus semua timestamp?"
+                        type="button" 
+                        class="inline-flex items-center justify-center px-4 py-1.5 text-xs font-bold text-white bg-amber-500 hover:bg-amber-600 dark:bg-amber-600 dark:hover:bg-amber-500 rounded-lg shadow-sm transition active:scale-95 select-none"
+                    >
+                        🔄 Reset Progress
+                    </button>
+                    <button 
                         wire:click="clearLogs" 
                         wire:confirm="Apakah Anda yakin ingin menghapus semua data log? Semua data animasi playback dari awal akan hilang."
                         type="button" 
