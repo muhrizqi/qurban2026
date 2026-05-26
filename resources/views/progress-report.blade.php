@@ -372,6 +372,46 @@
                 text-align: left;
             }
         }
+
+        /* Theme Toggle Button Style */
+        .theme-toggle-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            outline: none;
+        }
+        body.theme-mode-light .theme-toggle-btn {
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            color: #0f172a;
+        }
+        .theme-toggle-btn:hover {
+            transform: scale(1.08);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.15);
+        }
+        body.theme-mode-light .theme-toggle-btn:hover {
+            background: rgba(0, 0, 0, 0.08);
+            border-color: rgba(0, 0, 0, 0.15);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Show correct icon based on mode */
+        body.theme-mode-dark .theme-toggle-btn .light-icon { display: block; }
+        body.theme-mode-dark .theme-toggle-btn .dark-icon { display: none; }
+        body.theme-mode-light .theme-toggle-btn .light-icon { display: none; }
+        body.theme-mode-light .theme-toggle-btn .dark-icon { display: block; }
     </style>
 </head>
 <body class="theme-mode-{{ $state->theme }}">
@@ -381,9 +421,16 @@
             <h1>Progress Report Qurban Masjid Jogokariyan 1447H</h1>
             <p>LIVE MONITORING DASHBOARD</p>
         </div>
-        <div class="header-clock">
-            <div id="clock-time">00:00:00</div>
-            <div id="clock-date">Memuat tanggal...</div>
+        <div style="display: flex; align-items: center; gap: 1.5rem;">
+            <!-- Theme Toggle Button -->
+            <button id="theme-toggle-btn" class="theme-toggle-btn" title="Ubah Tema Cerah/Gelap">
+                <span class="dark-icon">🌙</span>
+                <span class="light-icon">☀️</span>
+            </button>
+            <div class="header-clock">
+                <div id="clock-time">00:00:00</div>
+                <div id="clock-date">Memuat tanggal...</div>
+            </div>
         </div>
     </header>
 
@@ -738,12 +785,14 @@
             fetch('/progressreport/data')
                 .then(response => response.json())
                 .then(data => {
-                    // Update theme mode (light/dark) dynamically
-                    const body = document.body;
-                    const newThemeMode = `theme-mode-${data.theme}`;
-                    if (!body.classList.contains(newThemeMode)) {
-                        body.classList.remove('theme-mode-dark', 'theme-mode-light');
-                        body.classList.add(newThemeMode);
+                    // Update theme mode (light/dark) dynamically ONLY if no local preference override exists
+                    if (!localStorage.getItem('progress-theme-override')) {
+                        const body = document.body;
+                        const newThemeMode = `theme-mode-${data.theme}`;
+                        if (!body.classList.contains(newThemeMode)) {
+                            body.classList.remove('theme-mode-dark', 'theme-mode-light');
+                            body.classList.add(newThemeMode);
+                        }
                     }
 
                     // Update theme colors dynamically on cards
@@ -867,6 +916,28 @@
         // Poll immediately and then every 2 seconds
         pollData();
         setInterval(pollData, 2000);
+
+        // Theme Local Toggle Script
+        const themeToggleBtn = document.getElementById('theme-toggle-btn');
+        if (themeToggleBtn) {
+            // Apply localStorage override if exists
+            const localTheme = localStorage.getItem('progress-theme-override');
+            if (localTheme) {
+                document.body.classList.remove('theme-mode-dark', 'theme-mode-light');
+                document.body.classList.add(`theme-mode-${localTheme}`);
+            }
+
+            themeToggleBtn.addEventListener('click', () => {
+                const isDark = document.body.classList.contains('theme-mode-dark');
+                const nextTheme = isDark ? 'light' : 'dark';
+                
+                document.body.classList.remove('theme-mode-dark', 'theme-mode-light');
+                document.body.classList.add(`theme-mode-${nextTheme}`);
+                
+                // Save preference
+                localStorage.setItem('progress-theme-override', nextTheme);
+            });
+        }
     </script>
 </body>
 </html>

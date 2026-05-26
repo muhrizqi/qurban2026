@@ -200,21 +200,8 @@ class ProgressAdmin extends Page
             ->send();
     }
 
-    /**
-     * Define header actions.
-     */
     protected function getHeaderActions(): array
     {
-        return [
-            Action::make('clearLogs')
-                ->label('Hapus Semua Log')
-                ->color('danger')
-                ->icon('heroicon-m-trash')
-                ->requiresConfirmation()
-                ->modalHeading('Hapus Semua Log Aktivitas?')
-                ->modalDescription('Apakah Anda yakin ingin menghapus semua data log? Semua data animasi playback dari awal akan hilang.')
-                ->modalSubmitActionLabel('Ya, Hapus Semua')
-                ->action(fn () => $this->clearLogs()),
-        ];
+        return [];
     }
 }

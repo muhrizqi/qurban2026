@@ -60,13 +60,21 @@
                 </div>
                 
                 <!-- Action Buttons -->
-                <div class="flex items-center gap-2">
+                <div class="flex flex-wrap items-center gap-2">
                     <a href="/progressreport" target="_blank" class="inline-flex items-center justify-center px-4 py-1.5 text-xs font-bold text-white bg-amber-600 rounded-lg hover:bg-amber-500 shadow-sm transition active:scale-95">
                         🖥️ Live TV Dashboard
                     </a>
                     <a href="/progressreport/playback" target="_blank" class="inline-flex items-center justify-center px-4 py-1.5 text-xs font-bold text-gray-700 dark:text-gray-200 bg-gray-200 dark:bg-gray-800 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-700 transition active:scale-95">
                         🎞️ Playback Animasi
                     </a>
+                    <button 
+                        wire:click="clearLogs" 
+                        wire:confirm="Apakah Anda yakin ingin menghapus semua data log? Semua data animasi playback dari awal akan hilang."
+                        type="button" 
+                        class="inline-flex items-center justify-center px-4 py-1.5 text-xs font-bold text-white bg-red-600 hover:bg-red-500 dark:bg-red-750 dark:hover:bg-red-600 rounded-lg shadow-sm transition active:scale-95 select-none"
+                    >
+                        🗑️ Hapus Semua Log
+                    </button>
                 </div>
             </div>
         </div>
