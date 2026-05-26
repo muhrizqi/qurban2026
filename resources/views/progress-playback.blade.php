@@ -213,6 +213,27 @@
             flex: 1;
             min-height: 0;
         }
+        .grid-layout-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.9rem;
+            flex: 1;
+            min-height: 0;
+        }
+
+        /* ─── Sub-card label inside card ─── */
+        .sub-card-label {
+            font-size: clamp(0.6rem, 0.78vw, 0.72rem);
+            font-weight: 800;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--tc);
+            opacity: 0.75;
+            margin-bottom: 0.35rem;
+            padding-bottom: 0.25rem;
+            border-bottom: 1px solid rgba(var(--tc-rgb), 0.2);
+            flex-shrink: 0;
+        }
 
         /* ─── Glassmorphism Card ─── */
         .card {
@@ -524,8 +545,9 @@
                 <div id="card_block_3" class="card theme-{{ $state->color_block_3 }} bg-theme-{{ $state->bg_block_3 ?? 'default' }}">
                     <div class="card-title">Penimbangan</div>
                     <div class="progress-item">
+                        <div class="sub-card-label">SAPI REGULER</div>
                         <div class="item-label-row">
-                            <span class="item-label">SAPI REGULER</span>
+                            <span class="item-label">TERTIMBANG</span>
                             <span id="penimbangan_sapi_reguler_val" class="item-values">-/-</span>
                         </div>
                         <div class="progress-bar-container"><div id="penimbangan_sapi_reguler_bar" class="progress-bar-fill"></div></div>
@@ -535,28 +557,15 @@
                         </div>
                     </div>
                     <div class="progress-item">
+                        <div class="sub-card-label">SAPI SUPER, DUPER &amp; PRIBADI</div>
                         <div class="item-label-row">
-                            <div>
-                                <span class="item-label">SAPI KHUSUS</span>
-                                <div class="item-sublabel">Super, Duper &amp; Pribadi</div>
-                            </div>
+                            <span class="item-label">TERTIMBANG</span>
                             <span id="penimbangan_sapi_khusus_val" class="item-values">-/-</span>
                         </div>
                         <div class="progress-bar-container"><div id="penimbangan_sapi_khusus_bar" class="progress-bar-fill"></div></div>
                         <div class="item-status-row">
                             <span>PROGRESS <span id="penimbangan_sapi_khusus_pct" class="item-pct">0</span>%</span>
                             <span>(<span id="penimbangan_sapi_khusus_time">-</span>)</span>
-                        </div>
-                    </div>
-                    <div class="progress-item">
-                        <div class="item-label-row">
-                            <span class="item-label">KAMBING</span>
-                            <span id="penimbangan_kambing_val" class="item-values">-/-</span>
-                        </div>
-                        <div class="progress-bar-container"><div id="penimbangan_kambing_bar" class="progress-bar-fill"></div></div>
-                        <div class="item-status-row">
-                            <span>PROGRESS <span id="penimbangan_kambing_pct" class="item-pct">0</span>%</span>
-                            <span>(<span id="penimbangan_kambing_time">-</span>)</span>
                         </div>
                     </div>
                 </div>
@@ -567,16 +576,17 @@
         <!-- Group 2: DISTRIBUSI QURBAN -->
         <div class="group-section">
             <h2 class="group-title">📦 Distribusian Qurban</h2>
-            <div class="grid-layout">
+            <div class="grid-layout-4">
 
-                <!-- Block 4: SOHIBUL QURBAN SAPI -->
+                <!-- Block 4: SOHIBUL QURBAN SAPI REGULER -->
                 <div id="card_block_4" class="card theme-{{ $state->color_block_4 }} bg-theme-{{ $state->bg_block_4 ?? 'default' }}">
                     <div class="card-title">Sohibul Qurban Sapi</div>
+                    <div class="sub-card-label">SAPI REGULER</div>
                     <div class="progress-item">
                         <div class="item-label-row">
-                            <span class="item-label">SAPI REGULER – TERBUNGKUS</span>
-                            <div>
-                                <span class="item-subvalues">Tdk Ambil: <span id="sohibul_sapi_reguler_tidak_diambil_val">0</span></span>
+                            <span class="item-label">TERBUNGKUS</span>
+                            <div style="text-align:right;">
+                                <div class="item-subvalues">Tdk Ambil: <span id="sohibul_sapi_reguler_tidak_diambil_val">0</span></div>
                                 <span id="sohibul_sapi_reguler_terbungkus_val" class="item-values">-/-</span>
                             </div>
                         </div>
@@ -588,7 +598,7 @@
                     </div>
                     <div class="progress-item">
                         <div class="item-label-row">
-                            <span class="item-label">SAPI REGULER – TERDISTRIBUSI</span>
+                            <span class="item-label">TERDISTRIBUSI</span>
                             <span id="sohibul_sapi_reguler_terdistribusi_val" class="item-values">-/-</span>
                         </div>
                         <div class="progress-bar-container"><div id="sohibul_sapi_reguler_terdistribusi_bar" class="progress-bar-fill"></div></div>
@@ -597,14 +607,17 @@
                             <span>(<span id="sohibul_sapi_reguler_terdistribusi_time">-</span>)</span>
                         </div>
                     </div>
+                </div>
+
+                <!-- Block 4b: SOHIBUL QURBAN SAPI KHUSUS -->
+                <div id="card_block_4b" class="card theme-{{ $state->color_block_4 }} bg-theme-{{ $state->bg_block_4 ?? 'default' }}">
+                    <div class="card-title">Sohibul Qurban Sapi</div>
+                    <div class="sub-card-label">SAPI SUPER, DUPER &amp; PRIBADI</div>
                     <div class="progress-item">
                         <div class="item-label-row">
-                            <div>
-                                <span class="item-label">SAPI KHUSUS – TERBUNGKUS</span>
-                                <div class="item-sublabel">Super, Duper &amp; Pribadi</div>
-                            </div>
-                            <div>
-                                <span class="item-subvalues">Tdk Ambil: <span id="sohibul_sapi_khusus_tidak_diambil_val">0</span></span>
+                            <span class="item-label">TERBUNGKUS</span>
+                            <div style="text-align:right;">
+                                <div class="item-subvalues">Tdk Ambil: <span id="sohibul_sapi_khusus_tidak_diambil_val">0</span></div>
                                 <span id="sohibul_sapi_khusus_terbungkus_val" class="item-values">-/-</span>
                             </div>
                         </div>
@@ -616,10 +629,7 @@
                     </div>
                     <div class="progress-item">
                         <div class="item-label-row">
-                            <div>
-                                <span class="item-label">SAPI KHUSUS – TERDISTRIBUSI</span>
-                                <div class="item-sublabel">Super, Duper &amp; Pribadi</div>
-                            </div>
+                            <span class="item-label">TERDISTRIBUSI</span>
                             <span id="sohibul_sapi_khusus_terdistribusi_val" class="item-values">-/-</span>
                         </div>
                         <div class="progress-bar-container"><div id="sohibul_sapi_khusus_terdistribusi_bar" class="progress-bar-fill"></div></div>
@@ -812,6 +822,13 @@
                         const nb = `bg-theme-${data[`bg_block_${i}`] || 'default'}`;
                         card.className = card.className.split(' ').filter(c => !c.startsWith('theme-') && !c.startsWith('bg-theme-')).join(' ') + ` ${nt} ${nb}`;
                     }
+                    // Sync card_block_4b with block 4 theme
+                    const card4b = document.getElementById('card_block_4b');
+                    if (card4b) {
+                        const nt4b = `theme-${data['color_block_4'] || 'emerald'}`;
+                        const nb4b = `bg-theme-${data['bg_block_4'] || 'default'}`;
+                        card4b.className = card4b.className.split(' ').filter(c => !c.startsWith('theme-') && !c.startsWith('bg-theme-')).join(' ') + ` ${nt4b} ${nb4b}`;
+                    }
 
                     // Block 1
                     const p1a = pct(data.penyembelihan_sapi_tersembelih, data.penyembelihan_sapi_total);
@@ -842,10 +859,6 @@
                     setText('penimbangan_sapi_khusus_val', `${data.penimbangan_sapi_khusus_tertimbang}/${data.penimbangan_sapi_khusus_total}`);
                     setText('penimbangan_sapi_khusus_pct', p3b); setBar('penimbangan_sapi_khusus_bar', p3b);
                     setText('penimbangan_sapi_khusus_time', data.penimbangan_sapi_khusus_time_formatted || '-');
-                    const p3c = pct(data.penimbangan_kambing_tertimbang, data.penimbangan_kambing_total);
-                    setText('penimbangan_kambing_val', `${data.penimbangan_kambing_tertimbang}/${data.penimbangan_kambing_total}`);
-                    setText('penimbangan_kambing_pct', p3c); setBar('penimbangan_kambing_bar', p3c);
-                    setText('penimbangan_kambing_time', data.penimbangan_kambing_time_formatted || '-');
 
                     // Block 4
                     const p4a = pct(data.sohibul_sapi_reguler_terbungkus, data.sohibul_sapi_reguler_total);

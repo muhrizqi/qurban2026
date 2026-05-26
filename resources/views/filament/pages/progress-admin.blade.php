@@ -421,10 +421,6 @@
                             <div style="font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;margin-bottom:6px;">Sapi Khusus (Super/Duper/PB)</div>
                             @include('filament.pages.progress-input-row', ['label' => 'Tertimbang', 'field' => 'penimbangan_sapi_khusus_tertimbang'])
                             @include('filament.pages.progress-input-row', ['label' => 'Total Target', 'field' => 'penimbangan_sapi_khusus_total'])
-                            <div class="pa-divider"></div>
-                            <div style="font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;margin-bottom:6px;">Kambing</div>
-                            @include('filament.pages.progress-input-row', ['label' => 'Tertimbang', 'field' => 'penimbangan_kambing_tertimbang'])
-                            @include('filament.pages.progress-input-row', ['label' => 'Total Target', 'field' => 'penimbangan_kambing_total'])
                         </div>
                     </div>
 
