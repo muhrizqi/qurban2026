@@ -36,3 +36,10 @@ Route::get('/publik/sohibul', function () {
 
     return view('publik-sohibul', compact('grouped', 'jenisList'));
 })->name('sohibul.publik');
+
+// ── Progress Report (Tanpa Login) ────────────────────────────────────────────
+use App\Http\Controllers\ProgressReportController;
+
+Route::get('/progressreport', [ProgressReportController::class, 'index'])->name('progress.report');
+Route::get('/progressreport/data', [ProgressReportController::class, 'data'])->name('progress.data');
+Route::get('/progressreport/playback', [ProgressReportController::class, 'playback'])->name('progress.playback');
